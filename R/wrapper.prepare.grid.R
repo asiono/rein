@@ -15,16 +15,18 @@
 ################################################################################
 
 
-
-wrapper.prepare.grid <- function(grid, check = F, line_types = NULL, trafo_types = NULL, verbose = 0){
+wrapper.prepare.grid <- function(grid, check = F, verbose = 0){
   source('R/convert.lines.R')
   source('R/replace_trafo_types.R')
   source('R/replace_line_types.R')
+  source('R/check_reinforcement.R')
+  
   # setting some probleme cases to NULL 
   grid$current <- NULL
   grid$transm_power <- NULL
+  
   if (verbose > 0) print('################# processing function: check grid #################')
-  if (check) check.grid(grid = grid)  
+  if (check) check_reinforcement(lines = grid$lines)
   if (verbose > 0) print('################# processing function: replace_line_types #################')
   grid <- replace_line_types(grid = grid, line_types = line_types, verbose = verbose )
   if (verbose > 0) print('################# processing function: replace_trafo_types #################')
@@ -35,15 +37,15 @@ wrapper.prepare.grid <- function(grid, check = F, line_types = NULL, trafo_types
   grid <- create.admittance(grid = grid, verbose = verbose )
   if (verbose > 0) print('################# processing function: create.power #################')
 
-   # if(is.null(grid$S_cal)){
-  if (F) {
+  if (is.null(grid$S_cal)) {
     names_actual <- rownames(grid$Y_red)
     actual <- rep(0, length(names_actual))
     names(actual) <- names_actual  
     warm = T
   }else{
     warm = F
-    actual <- grid$S_cal*3/1000
+    #change the power into kilo-Watt
+    actual <- grid$S_cal/1000
   }
 
   grid <- create.power(grid, verbose = verbose,  actual = actual)

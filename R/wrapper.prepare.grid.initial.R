@@ -16,9 +16,9 @@
 
 wrapper.prepare.grid.initial <- function(grid, check = F, line_types = NULL, trafo_types = NULL, verbose = 0){
 
-  source('~/Documents/test/convert.lines.R')
-  source('~/Documents/test/replace_trafo_types.R')
-  source('~/Documents/test/replace_line_types.R')
+  source('R/convert.lines.R')
+  source('R/replace_trafo_types.R')
+  source('R/replace_line_types.R')
   # setting some probleme cases to NULL 
   grid$current <- NULL
   grid$transm_power <- NULL
