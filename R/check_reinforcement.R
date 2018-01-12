@@ -11,23 +11,23 @@
 #' @author        Wolfgang Biener      wolfgang.biener(at)ise.fraunhofer.de
 ################################################################################
 
-check_reinforcement <- function(grid){
+check_reinforcement <- function(lines){
 
   # check if all line and trafos types are known
-  if (!exists('trafo_types')) data(types)
-  known_types <- c(trafo_types$type,line_types$type)
-  if (!all(grid$lines$model %in% known_types)) {
-    stop('Not all types in grid$lines$model are known. This is necessary for the
-         calculation of voltage drops.')}
+  if (!exists('trafo_types') | !exists('line_types')) lazyLoad('types')
+  if (!all(grid$lines$model %in% line_types$type | grid$lines$model %in% trafo_types$type)) 
+    {
+    stop('Not all cable and transformer types in the grid are known')
+    }
   
   # preparing igraph
   graph <- graph.data.frame(grid$lines, directed = F)
   #check islands 
-  if (!is.connected(graph)) stop('There are islands')
+  if (!is.connected(graph)) stop('There is islanding in the grid')
   # check if grid still has a double line 
-  if (any(is.loop(graph))) stop('grid still has a double line')    
+  if (any(is.loop(graph))) stop('The grid has double line')    
   # check if grid is radial  
-  if (ecount(mst(graph)) != ecount(graph)) stop('graph is not radial ')
+  if (ecount(mst(graph)) != ecount(graph)) stop('The tested grid is not radial')
 
 
 }

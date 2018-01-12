@@ -31,10 +31,9 @@ setwd('~/Documents/rein_lp/rein/')
   source('R/reactive_power_control.R')
   source('R/wrapper.prepare.grid.R')
 
-# 0.2 load line types and trafo types database
- load(file = 'data/types.RData')
- assign('line_types', as.data.table(line_types), envir = .GlobalEnv)
- assign('trafo_types', as.data.table(trafo_types), envir = .GlobalEnv)
+# 0.2 load line types and trafo types database and put them as lazy load index (.rdb/.rdx)
+ types = local({load(file = 'data/types.RData'); environment()})
+ tools:::makeLazyLoadDB(types, "types")
 
 # 1. Input data
  
@@ -46,9 +45,9 @@ setwd('~/Documents/rein_lp/rein/')
 # 1.3 Insert Distributed Generator's apparent power (in Watt single-phase)
  grid$S_cal[3] <- 2000
  grid$S_cal[4] <- 40000
- grid$S_cal[6] <- 1000
- grid$S_cal[7] <- 1000
- grid$S_cal[5] <- 1000
+ grid$S_cal[6] <- 2000
+ grid$S_cal[7] <- 2000
+ grid$S_cal[5] <- 2000
 
 # 1.3 Choose reinfrocement method from either: conventional, oltc, rpc, or oltc&rpc
   reinforcement_method <- 'conventional'
@@ -79,7 +78,7 @@ setwd('~/Documents/rein_lp/rein/')
   }
 
 # 2.2 Calculate initial power flow
-  grid <- wrapper.prepare.grid(grid)
+  grid <- wrapper.prepare.grid(grid, check = T, verbose = 0)
 
 # 2.3 Reinforcement iteration
   iteration_count <- 1          #number of iteration is reset to 1

@@ -26,8 +26,6 @@ build_solution_space_update <- function(grid, avail_asset_types, verbose = 0) {
   source('R/build_solution_space_T.R')
   source('R/find_parallel_lines_update.R')
   
-  check_reinforcement(grid = grid)
-  
   #Assigning corresponding grid paths and branches to the assets (and parallel lines)
   grid_volt_lv <- as.character(grid$lines$trafo_U2[1]/1000)
   
