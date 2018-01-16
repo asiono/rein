@@ -22,6 +22,8 @@
 ################################################################################
 
 create_resulting_grid <- function(grid, solution_space_combined,  verbose = 0 ) {
+  source('R/replace_transformer.R')
+  
   S_save <- grid$S_cal
   resulting_delta_grid  <- solution_space_combined[solution_space_combined$chosen_alternative == 1,]  
   #trafo reinforcements############################
@@ -49,7 +51,7 @@ create_resulting_grid <- function(grid, solution_space_combined,  verbose = 0 ) 
         end_node = reinforced_lines[i,"end"]
         chosen_line_type = reinforced_lines[i,"model"]
         
-        source('~/Documents/rein2/rein.git1/reIn/R/replace_line_by_bigger.R')
+        source('R/replace_line_by_bigger.R')
         grid = replace_line_by_bigger(grid, start_node,end_node,
                                       chosen_line_type, verbose = 0)
       }

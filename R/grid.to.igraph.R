@@ -206,13 +206,12 @@ igraph.edge.weights <- function(graph,grid) {
   line_lengths <- c()
 
   for (line_i in seq_along(grid$lines[,1])) {
-    parameters <- get.element.parameters(grid$lines$element[line_i])
     
-    if (parameters$type == "line") {
-      length <- parameters$l
-    }else if (parameters$type == "trafo") {
+    if (grid$lines$type == "line") {
+      length <- grid$lines$line_l
+    }else if (grid$lines$type == "trafo") {
       length <- 0
-    }else if (parameters$type == "switch") {
+    }else if (grid$lines$type == "switch") {
       length <- 0
     }
     line_lengths <- c(line_lengths,length)

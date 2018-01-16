@@ -20,11 +20,14 @@
 ################################################################################
 
 
-build_solution_space_update <- function(grid, avail_asset_types, verbose = 0) {
+build_solution_space_update <- function(grid, avail_asset_types, verbose = 0, line_types = NA, trafo_types = NA) {
   source('R/build_solution_space_A.R')
   source('R/build_solution_space_P.R')
   source('R/build_solution_space_T.R')
   source('R/find_parallel_lines_update.R')
+  
+  #checking if data(types) has already been executed 
+  if (is.na(line_types) | is.na(trafo_types)) lazyLoad('types')
   
   #Assigning corresponding grid paths and branches to the assets (and parallel lines)
   grid_volt_lv <- as.character(grid$lines$trafo_U2[1]/1000)
@@ -32,10 +35,16 @@ build_solution_space_update <- function(grid, avail_asset_types, verbose = 0) {
   #This function is to build data.table containing possible cable and transformer types and their specification for reinforcement
   get_expansion_alternatives <- function(type, avail_asset_types, grid_volt_lv) {
     #get possible cable data based on grid voltage level and available asset type
-    if (type == 'line') expansion_alternatives <- line_types[U == '0.4' & type %in% avail_asset_types$line & cost > 0, -c('comment','creation','code')]
+    if (type == 'line') {
+      line_types <- as.data.table(line_types)
+      expansion_alternatives <- line_types[U == grid_volt_lv & type %in% avail_asset_types$line & cost > 0, -c('comment','creation','code')]
+    }
     
     #get possible transformer data based on available asset type
-    if (type == 'trafo') expansion_alternatives <- trafo_types[type %in% avail_asset_types$trafo & cost > 0, -c('comment','creation')]
+    if (type == 'trafo') {
+      trafo_types <- as.data.table(trafo_types)
+      expansion_alternatives <- trafo_types[type %in% avail_asset_types$trafo & cost > 0, -c('comment','creation')]
+    }
     
     # rename coloumn 'type' into 'model' to match grid$lines coloumn name
     setnames(expansion_alternatives, old = "type", new = "model")

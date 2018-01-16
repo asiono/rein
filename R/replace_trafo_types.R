@@ -1,9 +1,7 @@
 
-replace_trafo_types <- function(grid, trafo_types = NULL , verbose=1) {
-
+replace_trafo_types <- function(lines, trafo_types = NA, verbose = 0) {
 
   #local copies
-  lines <- grid$lines
   lines$element <- as.character(lines$element)
   
   #out
@@ -11,28 +9,20 @@ replace_trafo_types <- function(grid, trafo_types = NULL , verbose=1) {
   if (verbose >= 3) print(lines$element)
   
   #checking if data(types) has already been executed 
-  if (is.null(trafo_types)) {
-    load(file = '~/Documents/test/types.RData')
-  }
+  if (is.na(trafo_types)) lazyLoad('types')
   
   #loop trafo type by rows 
   for (i in 1:nrow(trafo_types)) {
-    type_list <- strsplit(x = lines$element[which(lines$type == 'trafo')],split = ",")
-    type_vector0 <- unlist(type_list)
-    type_vector <- type_vector0[grep("[(]",type_vector0)]
-    type_vector <- sub(pattern = 'line[(]', x = type_vector, replacement = '')
-    type_vector <- sub(pattern = 'trafo[(]', x = type_vector, replacement = '')
-    type_vector0 <- sub(pattern = '[)]', x = type_vector0, replacement = '')
-    
-    #match types with element
-    trafo_match <- which(type_vector == trafo_types$type[i])
-    
-    if (length(trafo_match) == 0) {
-      trafo_match <- which(lines$model == trafo_types$type[i])
-    }
+       trafo_match <- which(lines$model == trafo_types$type[i])
 
     #if hits
     if (length(trafo_match) > 0) {
+      
+      #get trafo upper and lower voltage level
+      type_list <- strsplit(x = lines$element[which(lines$type == 'trafo')],split = ",")
+      type_vector0 <- unlist(type_list)
+      type_vector0 <- sub(pattern = '[)]', x = type_vector0, replacement = '')
+      
       lines$element[trafo_match] <- sprintf("%s%s,%s,%s%s", "trafo(", lines$model[trafo_match], 
                                             type_vector0[(length(type_vector0) - 1)], type_vector0[length(type_vector0)], ")")
       #out
@@ -76,7 +66,6 @@ replace_trafo_types <- function(grid, trafo_types = NULL , verbose=1) {
     }
   }
 
-  grid$lines <- lines
-  return(grid)
+  return(lines)
 }
 

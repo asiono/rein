@@ -39,15 +39,17 @@ setwd('~/Documents/rein_lp/rein/')
  
 # 1.1 Load grid that was built in SimTOOL (see build_grid.R)
  grid <- get(load(file = '/home/asiono/Documents/test/AndresGrid.RData'))
+ load(file = '~/Documents/simtool/simtool/SimTOOL/data/TUD_grids.RData')
+ grid <- TUD_grids[[6]]
  
 # 1.2 Load household profile if available
  
 # 1.3 Insert Distributed Generator's apparent power (in Watt single-phase)
- grid$S_cal[3] <- 2000
+ grid$S_cal[3] <- 20000
  grid$S_cal[4] <- 40000
- grid$S_cal[6] <- 2000
- grid$S_cal[7] <- 2000
- grid$S_cal[5] <- 2000
+ grid$S_cal[6] <- 20000
+ grid$S_cal[7] <- 20000
+ grid$S_cal[5] <- 20000
 
 # 1.3 Choose reinfrocement method from either: conventional, oltc, rpc, or oltc&rpc
   reinforcement_method <- 'conventional'

@@ -1,5 +1,6 @@
 calc_trafo_I_b <- function(grid, replacement_trafo, verbose = 3) {
   require(reshape2)
+  source('R/replace_transformer.R')
   replacement_trafo$I_b <- 0
   for (i in 1:nrow(replacement_trafo)) {
     grid_calc <- grid

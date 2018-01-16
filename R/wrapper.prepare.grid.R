@@ -25,12 +25,12 @@ wrapper.prepare.grid <- function(grid, check = F, verbose = 0){
   grid$current <- NULL
   grid$transm_power <- NULL
   
-  if (verbose > 0) print('################# processing function: check grid #################')
+  if (verbose > 0) print('################# processing function: check_reinforcement #################')
   if (check) check_reinforcement(lines = grid$lines)
   if (verbose > 0) print('################# processing function: replace_line_types #################')
-  grid <- replace_line_types(grid = grid, line_types = line_types, verbose = verbose )
+  grid$lines <- replace_line_types(lines = grid$lines, verbose = verbose)
   if (verbose > 0) print('################# processing function: replace_trafo_types #################')
-  grid <- replace_trafo_types(grid = grid, trafo_types = trafo_types, verbose = verbose)
+  grid$lines <- replace_trafo_types(lines = grid$lines, verbose = verbose)
   if (verbose > 0) print('################# processing function: convert.lines #################')
   grid <- convert.lines(grid = grid, verbose = verbose )
   if (verbose > 0) print('################# processing function: create.admittance #################')
@@ -42,7 +42,7 @@ wrapper.prepare.grid <- function(grid, check = F, verbose = 0){
     actual <- rep(0, length(names_actual))
     names(actual) <- names_actual  
     warm = T
-  }else{
+  } else {
     warm = F
     #change the power into kilo-Watt
     actual <- grid$S_cal/1000
@@ -58,7 +58,8 @@ wrapper.prepare.grid <- function(grid, check = F, verbose = 0){
   }
   grid <- solve.LF(grid = grid, warm = F , save = F, fast = F, verbose = verbose)
   if (verbose > 0) print('################# setting a lines type #################')
-  grid$lines$type <- get.element.type(grid$lines$element)
+  
+  #grid$lines$type <- get.element.type(grid$lines$element)
   
   return(grid)
 }
