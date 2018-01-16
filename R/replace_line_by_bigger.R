@@ -21,7 +21,7 @@
 ################################################################################
 
 replace_line_by_bigger <- function(grid,start_node,end_node,
-                                   chosen_line_type, verbose = 0){
+                                   chosen_line_type, verbose = 0, line_types = NA){
   
   if (verbose > 0) print('replace_line_by_bigger started')
 
@@ -29,6 +29,9 @@ replace_line_by_bigger <- function(grid,start_node,end_node,
     stop('there is a problem with input data in replace_line_by_bigger')
   }
   
+  #checking if data(types) has already been executed 
+  if (is.na(line_types)) lazyLoad('types')
+  assign('line_types', line_types, envir = .GlobalEnv)
   
   lines <- grid$lines
   rownames(lines) <- 1:nrow(lines)

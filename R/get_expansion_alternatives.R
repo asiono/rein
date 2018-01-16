@@ -1,9 +1,9 @@
 #todo doku
 
-get_expansion_alternatives <- function(type, avail_asset_types) {
+get_expansion_alternatives <- function(type, avail_asset_types, line_types = NA, trafo_types = NA) {
 
-  if (!exists('line_types') | !exists('trafo_types')) load(file = '~/Documents/test/types.RData')
-  
+  if (is.na(line_types) | is.na(trafo_types)) lazyLoad('types')
+  browser()
   #todo adopt it to the model
   
   if (type == 'line') {

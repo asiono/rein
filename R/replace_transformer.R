@@ -23,9 +23,13 @@
 ################################################################################
 
 replace_transformer <- function(grid,start_node,end_node,
-                                chosen_trafo_type, verbose = 0){
+                                chosen_trafo_type, verbose = 0, trafo_types = NA){
 
   if (verbose > 0) print('replace_transformer started')
+  
+  #checking if data(types) has already been executed 
+  if (is.na(trafo_types)) lazyLoad('types')
+  assign('trafo_types', trafo_types, envir = .GlobalEnv)
   
   lines <- grid$lines
   

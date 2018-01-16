@@ -4,9 +4,8 @@
 # the function replaces linetypes specified by a name like NAYY 4x 150 by its parameterset. The parameterset is stored in data(types)
 
 
-replace_line_types <- function(grid, line_types = NULL, verbose=1) {
+replace_line_types <- function(lines, line_types = NA, verbose = 1) {
   #local copies
-  lines <- grid$lines
   lines$element <- as.character(lines$element)
   lines$line_l <- NA
 
@@ -14,9 +13,7 @@ replace_line_types <- function(grid, line_types = NULL, verbose=1) {
   if (verbose >= 3) print(lines$element) 
   
   #checking if data(types) has already been executed 
-  if (is.null(line_types)) {
-    data(types, envir = environment())
-    }
+  if (is.na(line_types)) lazyLoad('types')
   
   #loop line type rows
   for (i in nrow(line_types):1) {
@@ -58,23 +55,22 @@ replace_line_types <- function(grid, line_types = NULL, verbose=1) {
       lines[sel, "max_I"] <- line_types$max_I[i]
       
       #store empty comments
-      if (!("comment" %in% names(lines))) lines$comment <- "" 
+      #if (!("comment" %in% names(lines))) lines$comment <- "" 
+      #unnecessary to put the comments into data frame
 
       # setting line_types comments to lines comments
-      lines[sel, "comment"] <- line_types$comment[i]
+      #lines[sel, "comment"] <- line_types$comment[i]
       
       #select lines without model description and paste
       #add model line if non-existant
       # model<-unlist(strsplit(lines$element[line_match], ","))[1] #sieht relativ unnötig aus.
 
       if (!("model" %in% names(lines))) lines$model <- NA
-  
       sel <- line_match[which(line_match  %in% which(is.na(lines$model)))]
       lines[sel, "model"] <- line_types$type[i]
     }
   }
 
-  grid$lines <- lines
-  return(grid)
+  return(lines)
 }
 

@@ -13,7 +13,7 @@
 #' @author Andre Siono         andre.siono(at)ise.fraunhofer.de
 ################################################################################
 
-reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iteration_count) {
+reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iteration_count, oltc_control_method = 'OLTC1') {
   
   source('R/build_solution_space_update.R')
   source('R/create_resulting_grid.R')
@@ -84,7 +84,7 @@ reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iter
     if (oltc_control_method == 'OLTC1') {
       grid_solved$ctr[[1]]$ctr_node <- grid$lines$end[which(grid$lines$type == 'trafo')]
       } else if (oltc_control_method == 'OLTC2') {
-        grid_solved$ctr[[1]]$ctr_node <- grid$lines_cal[which(!grid$lines$end %in% grid$lines$begin),]
+        grid_solved$ctr[[1]]$ctr_node <- grid$lines[which(!grid$lines$end %in% grid$lines$begin),]
         grid_solved$ctr[[1]]$ctr_node <- grid_solved$ctr[[1]]$ctr_node[which.min(grid_solved$ctr[[1]]$ctr_node$I), 'end']
       } else if (oltc_control_method == 'OLTC3') {
         grid_solved$ctr[[1]]$ctr_node <- grid$lines$end[which(!grid$lines$end %in% grid$lines$begin)]

@@ -11,10 +11,10 @@
 #' @author        Wolfgang Biener      wolfgang.biener(at)ise.fraunhofer.de
 ################################################################################
 
-check_reinforcement <- function(lines){
+check_reinforcement <- function(lines, line_types = NA, trafo_types = NA){
 
   # check if all line and trafos types are known
-  if (!exists('trafo_types') | !exists('line_types')) lazyLoad('types')
+  if (is.na(trafo_types) | is.na(line_types)) lazyLoad('types')
   if (!all(grid$lines$model %in% line_types$type | grid$lines$model %in% trafo_types$type)) 
     {
     stop('Not all cable and transformer types in the grid are known')
