@@ -57,7 +57,6 @@ calculate.loss.costs <- function(grid, energy_price=0.042, load_types = c()) {
   #loss_factor3 <- (load_factor^2 * (2+load_factor^2)) / (1 + 2 * load_factor) # #estimation function 3
   
   # determine load losses - maximum load case
-  S_cal_stored <- grid$S_cal
   grid$S_cal[Re(grid$S_cal) > 0] <- 0 + 0i
     grid <- wrapper.prepare.grid(grid = grid, verbose = 0)
   load_loss <- Mod(grid$loss)

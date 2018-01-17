@@ -29,7 +29,5 @@ get_trafo_voltages <- function(trafo){
     V2 <- as.numeric(unlist(trafo)[8])
   }
 
-  trafo_list <- list(V1 = V1, V2 = V2)
-  
   return(list(V1 = V1, V2 = V2))
 }

@@ -107,7 +107,6 @@ create.maxI <- function(lines, Nref, cal_node, verbose){
         # of the transformer. the problem is that there is only one max current given, 
         # where there a in reality two at each side of the transformer
 
-        power_calc_os  <- n_os * lines$max_I[i] * sqrt(3)/1000        
         power_calc_us  <- n_us * lines$max_I[i] * sqrt(3)/1000
         if (power_calc_us > 0.9*power_trafo && power_calc_us < 1.1*power_trafo) {
           line_max_I_os <- lines$max_I[i]*n_us/n_os
@@ -180,7 +179,6 @@ create.transmission.ratio <- function(Vref,Nref,cal_node, node_parameter,lines){
   connected <- c()
   transm_ratio <- c()
   
-  gr <- lines$trafo_group
   U_1n <- lines$trafo_U1
   U_2n <- lines$trafo_U2
   ### Transformation Ratio ###
@@ -280,19 +278,14 @@ convert.trafos <- function(lines, Vref, verbose){
   
   # allocating variables for further calculation, could be done easier if variables were net converted into a string before 
   S_n <- lines$trafo_Sn
-  gr <- lines$trafo_group
   u_k <- lines$trafo_uk
   P_cu <- lines$trafo_Pcu
   i_0 <- lines$trafo_i0
-  P_fe <- lines$trafo_Pfe
   U_1n <- lines$trafo_U1
-  U_2n <- lines$trafo_U2
-  
+
   #calculating normal current for further calculation
   I_1n <- S_n*1000/(sqrt(3)*U_1n)
-  I_1n <- S_n*1000/(sqrt(3)*U_1n)
-  I_2n <- S_n*1000/(sqrt(3)*U_2n)
-  
+
   # if that is all ok from a normalizing point of view?
   I_ref <- I_1n * U_1n/Vref
   
@@ -310,7 +303,6 @@ convert.trafos <- function(lines, Vref, verbose){
 
   ########### parallel element
   # old version 
-  R_fe <- Vref^2/(P_fe*1000)
 
   Z_m <- (Vref/(sqrt(3) * i_0) * I_1n)# problem, dass immer V_ref benützt wird und ein festes I_1n. Somit wird der widerstand nicht richtig transformiert.
 

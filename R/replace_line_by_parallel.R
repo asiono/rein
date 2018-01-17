@@ -26,7 +26,7 @@
 
 
 replace_line_by_parallel <- function(grid,start_node,begin_node,end_node,
-                                     crit_feeder_sorted,chosen_line_type , verbose = 0){
+                                     crit_feeder_sorted,chosen_line_type, verbose = 0){
 
   lines <- grid$lines
   line_to_replace <- which(lines$begin == begin_node  &
@@ -36,7 +36,6 @@ replace_line_by_parallel <- function(grid,start_node,begin_node,end_node,
   line_length <- 0
   x_coords <- c()
   y_coords <- c()
-  material_cost <- 0
   installation_cost <- 0
   
     if (length(line_to_replace) == 1) {
@@ -102,7 +101,6 @@ replace_line_by_parallel <- function(grid,start_node,begin_node,end_node,
         lines$element[line_to_replace] <- paste('line(',chosen_line_type,
                                                 ',',line_length,')', sep = '')
         lines$model[line_to_replace] <- chosen_line_type
-        lines$max_I[line_to_replace] <- line_types$max_I[which(line_types$type == chosen_line_type)]
         if (!is.null(x_coords)) lines$add_x[line_to_replace] <- paste(x_coords, collapse = ',')
         if (!is.null(x_coords)) lines$add_y[line_to_replace] <- paste(y_coords, collapse = ',')
         lines$changed[line_to_replace] <- 'parallel'

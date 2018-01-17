@@ -55,7 +55,7 @@ build_solution_space_update <- function(grid, avail_asset_types, verbose = 0, li
   expansion_alternatives <- list(line = as.data.frame(get_expansion_alternatives(type = 'line', avail_asset_types, grid_volt_lv)), 
                                  trafo = as.data.frame(get_expansion_alternatives(type = 'trafo', avail_asset_types, grid_volt_lv)))
   
-  solution_space_P <- build_solution_space_P(grid, expansion_alternatives, verbose = verbose )
+  solution_space_P <- build_solution_space_P(grid, expansion_alternatives, verbose = verbose)
   solution_space_A <- build_solution_space_A(grid, expansion_alternatives, verbose = verbose)
   solution_space_T <- build_solution_space_T(grid, expansion_alternatives, verbose = verbose)
   solution_space <- list("A" = solution_space_A, "P" = solution_space_P, "T" = solution_space_T)

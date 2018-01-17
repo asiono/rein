@@ -29,7 +29,7 @@ constraint_one_measure_per_slot <- function(solution_space, verbose = 0){
   # old grid lines   
   #Mapping of expansion alternatives to grid edges
   grid_edges = unique(solution_space$A[,c("begin", "end")])
-  grid_edges_I = cbind(grid_edges, diag(nrow(grid_edges)))
+  grid_edges_I = cbind(grid_edges, diag(1, nrow(grid_edges), nrow(grid_edges)))
   row.names(grid_edges_I) <- NULL
   mapping_EA_GE = merge(solution_space$A[,c("begin", "end", "I_b")], grid_edges_I, sort = F)
   
