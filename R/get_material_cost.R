@@ -19,9 +19,9 @@
 ################################################################################
 
 # function to determine material cost
-get_material_cost <- function(line, verbose = 0){
+get_material_cost <- function(line, verbose = 0, line_types = NA, trafo_types = NA){
   if (verbose > 10) print('get_material_cost called')
-  if (!exists('line_types') | !exists('trafo_types')) load(file = '~/Documents/test/types.RData')
+  if (is.na(line_types) | is.na(trafo_types)) lazyLoad('types')
   model <- as.character(line$model)
   material_cost <- NA
 
