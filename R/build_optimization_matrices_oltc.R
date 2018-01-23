@@ -22,8 +22,10 @@
 ################################################################################
 
 #todo see if it is possible to build a funktion that prepares less if the same grid with different loads is calculated again. 
-build_optimization_matrices <- function(solution_space, iteration_count, lines, allowed_voltage = 0.028, verbose=0){
-
+build_optimization_matrices <- function(solution_space, iteration_count, lines, allowed_voltage = 0.03, verbose=0){
+  source('R/create_voltage_constraints_update.R')
+  source('R/create_current_constraints.R')
+  
   if (iteration_count <= 3 ) {
     allowed_voltage <- allowed_voltage 
   } else {
@@ -32,16 +34,14 @@ build_optimization_matrices <- function(solution_space, iteration_count, lines, 
   
   # parameter to acitvate deactivate side conditions, see big_M Method 
   big_M_current <- 10000
-
-  big_M_voltage <- 1.0
+  big_M_voltage <- 0.5
   
   library(plyr)
   #Objective function coeficients (c)
   cT <- solution_space$T$cost
   c1 <- solution_space$A$cost
   c2 <- solution_space$P$cost 
-  source('R/create_voltage_constraints_update.R')
-  source('R/create_current_constraints.R')
+  
   matrices_I <- create_current_constraints(solution_space, big_M = big_M_current)
   matrices_U <- create_voltage_constraints(solution_space, big_M = big_M_voltage, allowed_voltage , iteration_count)
  

@@ -39,7 +39,6 @@ convert.lines <- function(grid, verbose = 1) {
   # setting lines parameters and assuring the right format
   lines$begin <- as.character(lines$begin)
   lines$end <- as.character(lines$end)
-  lines$element <- as.character(lines$element)
   lines$seriel <- NA
   lines$parallel <- NA
   lines$element_map <- ""
@@ -97,7 +96,7 @@ create.maxI <- function(lines, Nref, cal_node, verbose){
 
     for (i in 1:length(lines$begin)) {
      
-      if (length(unlist(strsplit(lines$element[i], ","))) == 8) {
+      if (lines$type[i] == 'trafo') {
         # assumption maximal current is always for the voltage at the high voltage side.  
         n_os <- lines$trafo_U1[i]
         n_us <- lines$trafo_U2[i]
@@ -170,10 +169,9 @@ input.check.convert.lines <- function(grid){
 create.transmission.ratio <- function(Vref,Nref,cal_node, node_parameter,lines){
   
   nodes_names <- c(Nref,cal_node)
-  lines_without_trafo <- lines[grep('trafo',lines$element, invert = T), ]
+  lines_without_trafo <- lines[grep('trafo',lines$type, invert = T), ]
   
-  
-  trafo_places <- grep('trafo', lines$element)  
+  trafo_places <- grep('trafo', lines$type)  
   
   # setting variables
   connected <- c()
@@ -234,7 +232,7 @@ create.transmission.ratio <- function(Vref,Nref,cal_node, node_parameter,lines){
 
 convert.lines.lines <- function(lines, transm_ratio,frequency,verbose){
   if (verbose >= 1) message("###    CALCULATE LINE PARAMETERS")
-  lines_places <- grep('line', lines$element)
+  lines_places <- grep('line', lines$type)
   R <- lines$line_R[lines_places]
   L <- lines$line_L[lines_places]
   G <- lines$line_G[lines_places]
@@ -252,7 +250,7 @@ convert.lines.lines <- function(lines, transm_ratio,frequency,verbose){
 
 convert.lines.switches <- function(grid, verbose){
   if (verbose >= 1) message("###    REPLACE SWITCHES")
-  places <- grep('switch', grid$lines$element)
+  places <- grep('switch', grid$lines$type)
   
   for (n in places) {
     state <- as.numeric(substring(grid$lines$element[n],8 , 8))
@@ -274,7 +272,7 @@ convert.lines.switches <- function(grid, verbose){
 
 convert.trafos <- function(lines, Vref, verbose){
   
-  trafo_places <- grep('trafo', lines$element)
+  trafo_places <- grep('trafo', lines$type)
   
   # allocating variables for further calculation, could be done easier if variables were net converted into a string before 
   S_n <- lines$trafo_Sn

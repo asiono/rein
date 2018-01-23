@@ -27,8 +27,7 @@ get_grid_paths_and_branches <- function(lines) {
   graph = graph.data.frame(lines, directed = F)
 
   #determine root node (transformer)
-  root_node <- lines$begin[grep(lines$element, pattern = "trafo")]
-  #root_node <- lines$end[grep(lines$element, pattern = "trafo")]
+  root_node <- lines$begin[grep(lines$trafo, pattern = "trafo")]
   #create the output data frame
   edges_df = get.data.frame(graph)  
   edges_df = edges_df[,c(1,2)]

@@ -25,7 +25,7 @@ find_parallel_lines_update <- function(lines){
   require(igraph, quietly = T)
   graph <- grid.to.igraph(lines, directed = T)
   #Get root node (todo: What if a grid has multiple transformers / Sammelschienen?)
-  root_node <- lines$end[grep(lines$element, pattern = "trafo")]
+  root_node <- lines$end[grep(lines$type, pattern = "trafo")]
   
   distance_in_edges = melt(distances(graph, v = root_node, to = V(graph), 
                                      weights = NA), value.name = "Edge_count")

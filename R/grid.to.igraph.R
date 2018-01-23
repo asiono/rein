@@ -138,7 +138,7 @@ plot.grid.igraph <- function(graph, grid, coords = NA) {
   V(graph)[gen_load_nodes_no_S]$shape <- "none"
   
   # mark trafo "line"
-  trafo_line <- grep(pattern = "trafo", x = grid$lines$element)
+  trafo_line <- grep(pattern = "trafo", x = grid$lines$type)
   E(graph)[trafo_line]$lty <- 3 # 3=dotted
   E(graph)[trafo_line]$width <- 3
   
@@ -157,7 +157,7 @@ plot.grid.igraph <- function(graph, grid, coords = NA) {
   V(graph)[busbar_nodes]$label.dist <- 5#0.4
 
   # mark size of the lines
-  switch_line_nb <- grep(pattern = "switch", x = grid$lines$element)
+  switch_line_nb <- grep(pattern = "switch", x = grid$lines$type)
   max_max_I <- as.numeric(max(grid$lines$max_I[-c(trafo_line,switch_line_nb)]))
 
   for (i in 1:6) { 

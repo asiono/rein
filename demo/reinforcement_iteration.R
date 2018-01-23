@@ -13,10 +13,12 @@
 #' @author Andre Siono         andre.siono(at)ise.fraunhofer.de
 ################################################################################
 
-reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iteration_count, oltc_control_method = 'OLTC1') {
+reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iteration_count) {
   
   source('R/build_solution_space_update.R')
   source('R/create_resulting_grid.R')
+  source('R/wrapper.prepare.grid.R')
+  source('R/combine_solution_space.R')
   source('R/build_optimization_matrices_oltc.R')
   source('~/Documents/simtool/simtool/SimTOOL/R/solve.LF.R')
   
@@ -69,48 +71,13 @@ reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iter
   
   #rebuild and recalculate grid with optimization result
   grid_solved <- create_resulting_grid(solution_space_combined = solution_space_combined, grid, verbose = 0)
-
-  if (any(grepl('OLTC', grid_solved$lines$model))) {
-    assign('oltc.trigger', T, envir = .GlobalEnv)
-    #create controller list
-    grid_solved$ctr <- list()
-    
-    #define controller entry
-    grid_solved$ctr[[1]] <- list()
-    grid_solved$ctr[[1]]$mode <- "OLTC"
-    #connection nodes
-    grid_solved$ctr[[1]]$hv_node <- solution_space_combined[1, 'begin']
-    grid_solved$ctr[[1]]$lv_node <- solution_space_combined[1, 'end']
-    if (oltc_control_method == 'OLTC1') {
-      grid_solved$ctr[[1]]$ctr_node <- grid$lines$end[which(grid$lines$type == 'trafo')]
-      } else if (oltc_control_method == 'OLTC2') {
-        grid_solved$ctr[[1]]$ctr_node <- grid$lines[which(!grid$lines$end %in% grid$lines$begin),]
-        grid_solved$ctr[[1]]$ctr_node <- grid_solved$ctr[[1]]$ctr_node[which.min(grid_solved$ctr[[1]]$ctr_node$I), 'end']
-      } else if (oltc_control_method == 'OLTC3') {
-        grid_solved$ctr[[1]]$ctr_node <- grid$lines$end[which(!grid$lines$end %in% grid$lines$begin)]
-      } else if (oltc_control_method == 'OLTC4') {
-        grid_solved$ctr[[1]]$ctr_node <- names(grid$S_cal[which(!grid$S_cal == 0)])
-      } else {
-        stop('Please insert correct OLTC control method')
-      }
-    #tap settings
-    grid_solved$ctr[[1]]$pos_taps <- 6 #voltage up regulation
-    grid_solved$ctr[[1]]$neg_taps <- 6 #voltage down regulation
-    # pos_taps+neg taps + 1(0-tap) < [5,7,9](http://www.reinhausen.com/de/desktopdefault.aspx/tabid-1605/1835_read-4652/)
-    grid_solved$ctr[[1]]$curr_tap <- 0  
-    grid_solved$ctr[[1]]$tap_size <- 1.5 #percentual of U_set  usual [1,5%, 2% or 2,5%]
-    #[0.8 ... 2.5%]according to: On-Load Tap-Changers for Power Transformers A Technical Digest, MR Publication
-    #lead voltage
-    grid_solved$ctr[[1]]$U_set <- U_set
-    grid_solved$ctr[[1]]$deadband <- 0.6 #percentual of U_set 0.6
-    grid_solved$ctr[[1]]$U_min <- U_set*(1 - 0.08)
-    grid_solved$ctr[[1]]$U_max <- U_set*(1 + 0.08)
-    grid_solved$ctr[[1]]$verbose <- 2
-    grid_solved <- solve.LF(grid = grid_solved, meth = "G", ctr = c("OLTC"), warm = F, verbose = 0)
-  } else {
-    grid_solved <- solve.LF(grid = grid_solved, warm = F, verbose = 0)
-  }
   
+  source('R/wrapper.prepare.grid.R')
+  grid_solved <- wrapper.prepare.grid(grid_solved[c('SimTOOL_version', 
+                                                    'description', 'creation', 'Nref', 'Vref', 
+                                                    'frequency', 'power', 'coordinates', 'cal_node', 'lines', 'S_cal')],  
+                                      check = T, solution_space_combined, U_set, verbose = 0)
+
   #define total cost
   grid_solved$total_cost <- result_lp$objval
   return(grid_solved)

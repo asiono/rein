@@ -23,6 +23,7 @@ library(Matrix)
 library(data.table)
 options(stringsAsFactors = FALSE)
 setwd('~/Documents/rein_lp/rein/')
+starttime <- Sys.time()
 
 # 0. Loading necessary database
 # 0.1 loading necessary functions
@@ -46,24 +47,23 @@ setwd('~/Documents/rein_lp/rein/')
  
 # 1.3 Insert Distributed Generator's apparent power (in Watt single-phase)
  grid$S_cal[3] <- 20000
- grid$S_cal[4] <- 40000
+ grid$S_cal[4] <- 12000
  grid$S_cal[6] <- 20000
- grid$S_cal[7] <- 20000
- grid$S_cal[5] <- 20000
+ grid$S_cal[12] <- 10000
+ grid$S_cal[8] <- 7000
+ grid$S_cal[9] <- 5000
+ grid$S_cal[14] <- 7000
+ grid$S_cal[16] <- 20000
+ grid$S_cal[17] <- 2000
+ grid$S_cal[11] <- 5000
+ grid$S_cal[7] <- 7000
+ grid$S_cal[5] <- 10000
 
 # 1.3 Choose reinfrocement method from either: conventional, oltc, rpc, or oltc&rpc
   reinforcement_method <- 'conventional'
   
-# 1.4 Choose OLTC control method (will be used if OLTC is selected)
-  # OLTC1 for control of the busbar voltage
-  # OLTC2 for control of one point at one of the feeder-ends
-  # OLTC3 for control of all points at the end of the feeders
-  # OLTC4 for control of all POC where DG(s) are connected
-  oltc_control_method <- 'OLTC1'
-  assign('oltc_control_method', oltc_control_method, envir = .GlobalEnv)
-
 # 1.4 Define desired line and trafo types
-  avail_asset_types <- list(line = c("2xNAYY4x150", "2xNAYY4x240", "4xNAYY4x240", "8xNAYY4x240", "16xNAYY4x240"),
+  avail_asset_types <- list(line = c("NAYY4x150", "2xNAYY4x240", "2xNAYY4x150", "4xNAYY4x240", "8xNAYY4x240"),
   trafo = c("DOTEL_630", "DOTEL_1000", "DOTEL_1250", "DOTEL_800", "DOTEL_1600"))
   #add original line and trafo into database if not yet available
   if (!all(grid$lines$model[which(grid$lines$type == 'line')] %in% avail_asset_types$line)) {
@@ -110,6 +110,9 @@ setwd('~/Documents/rein_lp/rein/')
   }
 
 # 2.4 Plot grid before and after reinforcement
-plot_grid_rein(grid, U_set = U_set)
+  endtime <- Sys.time()
+  totaltime <- endtime - starttime
+  print(totaltime)
+#plot_grid_rein(grid, U_set = U_set)
 plot_grid_rein(grid_solved, U_set = U_set)
 

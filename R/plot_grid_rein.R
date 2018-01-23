@@ -34,7 +34,8 @@ plot_grid_rein = function(grid, U_set = 400, vertex_label = T, edge_label = T, a
   V(grid_graph)$Mod_U = Mod(V(grid_graph)$U[ord])
   #Voltage in p.u. 
   #modified for oltc because grid$U_res/trafo_U2 and grid$U/grid$Vref*sqrt(3) in OLTC are different
-  V(grid_graph)$u <- c(V(grid_graph)$Mod_U[1]/grid$Vref, V(grid_graph)$Mod_U[-1]/U_set)
+  V(grid_graph)$u <- c(V(grid_graph)$Mod_U[which(names(V(grid_graph)) == "GRID")]/grid$Vref, 
+                       V(grid_graph)$Mod_U[which(names(V(grid_graph)) != "GRID")]/U_set)
   
   #Loads
   V(grid_graph)$S <- as.complex(NA)

@@ -18,11 +18,9 @@
 create_grid_assets <- function(grid, type = c('trafo', 'line')){
   
   # create list with actual grid lines 
-  grid_assets = grid$lines[grid$lines$type == type,]
-  grid_assets$model_old = grid_assets$model
-  grid_assets$model = NULL
-  
-  grid_assets$length_km  <- get_line_length(grid_assets$element)
+  grid_assets <-  grid$lines[grid$lines$type == type,]
+  names(grid_assets)[names(grid_assets) == 'model'] <- 'model_old'
+  names(grid_assets)[names(grid_assets) == 'line_l'] <- 'length_km'
   
   # mark category (Asset)
   grid_assets[,"Category"] = "A"
@@ -32,30 +30,10 @@ create_grid_assets <- function(grid, type = c('trafo', 'line')){
   colnames(transm_ratio) = "transmissio_ratio"
   grid_assets = merge(grid_assets,transm_ratio , by.x = "end", by.y = "row.names")
   
-#   grid_assets$transmissio_ratio <- NA
-#   for(i in unique(grid$transm_ratio)){
-#     names_trans <-names(grid$transm_ratio[which(grid$transm_ratio == i)])
-#     grid_assets$transmissio_ratio[ which(grid$lines$type == type & grid$lines$begin%in%names_trans)] <- i
-#   }
-  
   #adding the flowing current of the grid
   currents = melt(grid$current, value.name = 'I_b')
   grid_assets <-  merge(grid_assets, currents, by.x = c("begin", "end"), by.y = c("Var1", "Var2"))
   grid_assets$I_b <- grid_assets$I_b/grid_assets$transmissio_ratio
   
-  
-#   
-#   # todo improve this getting the complex current using grid$current
-#   I_A        <- melt(grid$maxI*grid$usage, value.name = 'I_A')
-#   I_A        <- cbind(I_A, type)
-#   colnames(I_A)[4] <- 'type'
-#   grid_assets <-  merge(grid_assets, I_A, by.x = c("begin", "end","type"),
-#                         by.y= c("Var2", "Var1", "type"))
-#   
-#   # avoiding doubling 
-#   grid_assets$max_I <- NULL 
-#   grid_assets$model <- NULL 
-  
   return(grid_assets)
-  
 }

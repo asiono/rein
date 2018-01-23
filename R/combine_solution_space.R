@@ -34,7 +34,7 @@ solution_space_calc <- rbind(solution_space$T[,needed_cols],
                              solution_space$P[,needed_cols])
 solution_space_calc$chosen_alternative <- chosen_expansions
 
-return(solution_space_calc)
+return(solution_space_calc[which(solution_space_calc$chosen_alternative == "1"),])
 
 
 }

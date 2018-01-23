@@ -21,13 +21,13 @@
 
 
 build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0){
+  source('R/find_parallel_lines_update.R')
+  source('R/get_grid_paths_and_branches.R')
   
-  grid_paths = get_grid_paths_and_branches(grid$lines)
+  grid_paths <- get_grid_paths_and_branches(grid$lines)
   #get all assets of type i of the grid
   grid_assets <- create_grid_assets(grid, type = 'line')
 
-  source('R/find_parallel_lines_update.R')
-  
   #add transmission ratio
   transm_ratio_assets <- grid_assets[,c("end", "transmissio_ratio")]
   transm_ratio_assets <- unique(transm_ratio_assets)

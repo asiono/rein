@@ -47,9 +47,6 @@ wrapper.prepare.grid.initial <- function(grid, check = F, line_types = NULL, tra
   
   grid <- create.power(grid, verbose = verbose,  actual = actual)
   #grid <- solve.LF(grid = grid, warm = F , save = F, fast = F, verbose = verbose)
-
-  if (verbose > 0) print('################# setting a lines type #################')
-  #grid$lines$type <- get.element.type(grid$lines$element)
   
   return(grid)
 }

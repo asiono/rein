@@ -22,6 +22,7 @@
 
 build_solution_space_P <- function(grid, expansion_alternatives, verbose = 0){
   source('R/find_parallel_lines_update.R')
+  source('R/get_grid_paths_and_branches.R')
   grid_paths = get_grid_paths_and_branches(grid$lines)
   
   #build parallel lines
