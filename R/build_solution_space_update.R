@@ -24,7 +24,6 @@ build_solution_space_update <- function(grid, avail_asset_types, verbose = 0, li
   source('R/build_solution_space_A.R')
   source('R/build_solution_space_P.R')
   source('R/build_solution_space_T.R')
-  source('R/find_parallel_lines_update.R')
   
   #checking if data(types) has already been executed 
   if (is.na(line_types) | is.na(trafo_types)) lazyLoad('types')

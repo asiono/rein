@@ -59,7 +59,7 @@ create_voltage_constraints <- function(solution_space, big_M, allowed_voltage, v
       if (grepl('OLTC', solution_space$T$model[i])) {
         AT_OLTC[1:(2*nrow(AT)), i] <- -big_M_OLTC
       }else {
-        AT_OLTC[((2*nrow(AT))+1):nrow(AT_OLTC), i] <- -big_M_OLTC
+        AT_OLTC[((2*nrow(AT)) + 1):nrow(AT_OLTC), i] <- -big_M_OLTC
       }
     }
     ##built them into big M matrix
@@ -90,15 +90,10 @@ create_voltage_constraints <- function(solution_space, big_M, allowed_voltage, v
     const.dir <- ifelse(const.dir == 1, '>=', '<=')
 
     }else{
-    A <- cbind (AT, A)
+    A <- cbind(AT, A)
     b <- c(matrices_voltage_no_parallel$b1, matrices_voltage_no_parallel$b2, 
                  matrices_voltage_parallel$b1, matrices_voltage_parallel$b2,
                  matrices_voltage_parallel_branch$b1, matrices_voltage_parallel_branch$b2)
-  }
-  
-  if(verbose>3){
-    print('A3,const.dir, b3')
-    print(cbind(A3,const.dir_3,b3))
   }
   
   matrices <- list( A = A, b = b, const.dir = const.dir)

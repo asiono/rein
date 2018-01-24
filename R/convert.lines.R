@@ -35,7 +35,6 @@ convert.lines <- function(grid, verbose = 1) {
   frequency <- grid$frequency
   cal_node <- grid$cal_node
   
-  
   # setting lines parameters and assuring the right format
   lines$begin <- as.character(lines$begin)
   lines$end <- as.character(lines$end)

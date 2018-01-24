@@ -21,7 +21,7 @@
 #'@author        Wolfgang Biener/Gunther Gust         wolfgang.biener(at)ise.fraunhofer.de
 ################################################################################
 
-create_voltage_constraints <- function(solution_space, big_M, allowed_voltage, iteration, verbose = 0){
+create_voltage_constraints <- function(solution_space, big_M, allowed_voltage, iteration, oltc.trigger, verbose = 0){
   source('R/create_voltage_constraints_no_parallel.R')
   source('R/create_voltage_constraints_parallel.R')
   source('R/create_voltage_constraints_parallel_branch.R')
@@ -55,7 +55,7 @@ create_voltage_constraints <- function(solution_space, big_M, allowed_voltage, i
     
     #dU correction for OLTC application
     if (oltc.trigger == T) {
-      dU.factor <- 1.0 + iteration_count/5
+      dU.factor <- 1.0 + iteration/5
       matrices_voltage_no_parallel$A <- cbind(matrices_voltage_no_parallel$A[,1:nrow(solution_space$A)]*dU.factor, 
                                               matrices_voltage_no_parallel$A[,(nrow(solution_space$A) + 1):ncol(matrices_voltage_no_parallel$A)])
       matrices_voltage_parallel$A <- cbind(matrices_voltage_parallel$A[,1:nrow(solution_space$A)]*dU.factor, 

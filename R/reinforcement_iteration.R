@@ -13,14 +13,12 @@
 #' @author Andre Siono         andre.siono(at)ise.fraunhofer.de
 ################################################################################
 
-reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iteration_count) {
-  
+reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iteration_count, oltc.trigger) {
   source('R/build_solution_space_update.R')
   source('R/create_resulting_grid.R')
   source('R/wrapper.prepare.grid.R')
   source('R/combine_solution_space.R')
   source('R/build_optimization_matrices_oltc.R')
-  source('~/Documents/simtool/simtool/SimTOOL/R/solve.LF.R')
   
   #load optimization function based on method selection
   if (method == 'conventional') {
@@ -44,7 +42,7 @@ reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iter
   solution_space <- build_solution_space_update(grid, avail_asset_types)
   
   #build matrices for linear optimization
-  matrices <- build_optimization_matrices(solution_space = solution_space, iteration_count, lines = grid$lines, verbose = 5 )
+  matrices <- build_optimization_matrices(solution_space, iteration_count, lines, oltc.trigger, verbose = 0)
   kappa(matrices$A)
 
   #run optimization with linear and integer programming
@@ -68,16 +66,16 @@ reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iter
   ifrm("current_neg")
   ifrm("lf_pos")
   ifrm("lf_neg")
+  ifrm("trafo_types")
   
   #rebuild and recalculate grid with optimization result
   grid_solved <- create_resulting_grid(solution_space_combined = solution_space_combined, grid, verbose = 0)
   
-  source('R/wrapper.prepare.grid.R')
   grid_solved <- wrapper.prepare.grid(grid_solved[c('SimTOOL_version', 
                                                     'description', 'creation', 'Nref', 'Vref', 
                                                     'frequency', 'power', 'coordinates', 'cal_node', 'lines', 'S_cal')],  
-                                      check = T, solution_space_combined, U_set, verbose = 0)
-
+                                      check = F, solution_space_combined, U_set, verbose = 0)
+  
   #define total cost
   grid_solved$total_cost <- result_lp$objval
   return(grid_solved)

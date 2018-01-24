@@ -49,7 +49,7 @@ create_resulting_grid <- function(grid, solution_space_combined,  verbose = 0 ) 
       solution_space_combined$ID <- sprintf("%s_%s_%s", solution_space_combined$measure, solution_space_combined$begin, solution_space_combined$end)
       #sort solution_space_combined to match grid$lines
       solution_space_combined[order(match(paste(solution_space_combined[, 'begin'], solution_space_combined[, 'end']), paste(grid$lines[ ,'begin'],grid$lines[ ,'end']))),]
-      grid$lines[no_pline_place,c('begin','end', 'element', 'model', 'ID')] <- solution_space_combined[no_pline_place, c('begin','end', 'element', 'model', 'ID')]
+      grid$lines[no_pline_place,c('begin','end', 'element', 'model')] <- solution_space_combined[no_pline_place, c('begin','end', 'element', 'model')]
      
       # adding new line 
       i = p_line_place

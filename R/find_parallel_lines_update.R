@@ -21,7 +21,8 @@
 #todo: strom durch alten leitungen verringert sich um den der durch das stueck geht. 
 
 find_parallel_lines_update <- function(lines){
-  source('~/Documents/rein2/rein.git1/reIn/R/check_number_parallel_lines.R')
+  source('R/check_number_parallel_lines.R')
+  source('R/grid.to.igraph.R')
   require(igraph, quietly = T)
   graph <- grid.to.igraph(lines, directed = T)
   #Get root node (todo: What if a grid has multiple transformers / Sammelschienen?)

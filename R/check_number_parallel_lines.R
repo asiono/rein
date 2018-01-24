@@ -16,7 +16,7 @@
 
 
 check_number_parallel_lines <- function(parallel_lines, lines , root_node){
-  
+  source('R/grid.to.igraph.R')
   # nb of found plines 
   nb_plines <- length(which(grepl('Parallel',colnames(parallel_lines))))
   

@@ -1,22 +1,13 @@
 calc_trafo_I_b <- function(grid, replacement_trafo, verbose = 3) {
-  require(reshape2)
-  source('R/replace_transformer.R')
   replacement_trafo$I_b <- 0
+  
+#replace transformer type in the grid and perform load flow calculation to get actual current
   for (i in 1:nrow(replacement_trafo)) {
     grid_calc <- grid
-    start_node = replacement_trafo[i,"begin"]
-    end_node = replacement_trafo[i,"end"]
-    chosen_trafo_type = replacement_trafo[i,"model"]
-    grid_calc <- replace_transformer(grid_calc,start_node,end_node,
-                                chosen_trafo_type, verbose = 0)
+    
+    line_nr <- which(grid_calc$lines$begin == replacement_trafo[i,"begin"] & grid_calc$lines$end == replacement_trafo[i,"end"])
+    grid_calc$lines$model[line_nr] <- replacement_trafo[i,"model"]
 
-    for (j in 1:nrow(grid_calc$lines)) {
-      if (grid_calc$lines$type[j] == 'trafo') {
-        trafo_voltages <- get_trafo_voltages(trafo = grid_calc$lines[j, 'element'])
-        grid_calc$lines$element[j] <- paste0('trafo(',grid_calc$lines$model[j], ',', trafo_voltages$V1, ',', trafo_voltages$V2,')')
-      }
-    }
-    grid_calc$lines[,grepl('trafo',names(grid_calc$lines))] <- NULL
     grid_calc$lines[,c('trafo_U1', 'trafo_U2')] <- grid$lines[,c('trafo_U1', 'trafo_U2')]
     
     source('~/Documents/rein2/rein.git1/reIn/R/wrapper.prepare.grid.R')

@@ -77,9 +77,8 @@ build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0){
   # input : expansion_alternatives , grid_assets, grid,  parallel_lines , parallel_to
 
   #construct solution space for original lines
-  grid_assets$model <- NULL
-  grid_assets$max_I <- NULL
-  solution_space_A <- merge(expansion_alternatives$line, grid_assets ,  by = NULL,sort = F)
+  solution_space_A <- merge(expansion_alternatives$line, grid_assets[,!colnames(grid_assets) %in% c("model", "max_I", "cost")] ,  
+                            by = NULL,sort = F)
   
   #add impedances
   solution_space_A <- calculate_impedances(grid = grid,

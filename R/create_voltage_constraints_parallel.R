@@ -26,16 +26,16 @@
 create_voltage_constraints_parallel <- function(solution_space, big_M, allowed_voltage, verbose = 0){
   
   parallel_lines_places <- (grepl('Parallel_', colnames(solution_space$A))
-                            &!grepl('I_b_', colnames(solution_space$A)))
+                            & !grepl('I_b_', colnames(solution_space$A)))
   # parallel lines 
   A1_1 <- (t(solution_space$A[,parallel_lines_places]
-               *solution_space$A[, grepl('dU_I_b', colnames(solution_space$A))]))
+               * solution_space$A[, grepl('dU_I_b', colnames(solution_space$A))]))
   
   A1_2 <- t(solution_space$P[,grepl('Parallel_', colnames(solution_space$P))]*big_M)
   
   # putting all togehter
   A <- cbind(A1_1, A1_2)
-  b1 <- rep(allowed_voltage,nrow(A1_2))+big_M
+  b1 <- rep(allowed_voltage,nrow(A1_2)) + big_M
   const.dir <- rep('<=', nrow(A1_2))
   
   ## add new rows for voltage swing under zero

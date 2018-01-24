@@ -16,11 +16,13 @@
 
 
 wrapper.prepare.grid <- function(grid, check = F, solution_space_combined = NULL, U_set = NULL, verbose = 0){
+  source('~/Documents/simtool/simtool/SimTOOL/R/solve.LF.R')
+  #setwd('~/Documents/rein_lp/rein/')
   source('R/convert.lines.R')
   source('R/replace_trafo_types.R')
   source('R/replace_line_types.R')
   source('R/check_reinforcement.R')
-  
+
   # setting some probleme cases to NULL 
   grid$current <- NULL
   grid$transm_power <- NULL
@@ -57,17 +59,19 @@ wrapper.prepare.grid <- function(grid, check = F, solution_space_combined = NULL
     grid$U_cal <- rbind(grid$U_cal, add_U_cal)
   }
   
+  grid <- solve.LF(grid = grid, warm = F , save = F, fast = F, verbose = verbose)
+  
   if (any(grepl('OLTC', grid$lines$model))) {
-    assign('oltc.trigger', T, envir = .GlobalEnv)
+    #need to add trafo in the element because solve.LF in SimTOOL requires checking it
+    grid$lines$element[which(grid$lines$type == 'trafo')] <- as.character('trafo')
     #create controller list
     grid$ctr <- list()
-    
     #define controller entry
     grid$ctr[[1]] <- list()
     grid$ctr[[1]]$mode <- "OLTC"
     #connection nodes
-    grid$ctr[[1]]$hv_node <- solution_space_combined[1, 'begin']
-    grid$ctr[[1]]$lv_node <- solution_space_combined[1, 'end']
+    grid$ctr[[1]]$hv_node <- grid$lines$begin[which(grid$lines$type == 'trafo')]
+    grid$ctr[[1]]$lv_node <- grid$lines$end[which(grid$lines$type == 'trafo')]
     grid$ctr[[1]]$ctr_node <- grid$lines$end[which(grid$lines$type == 'trafo')]
     #tap settings
     grid$ctr[[1]]$pos_taps <- 6 #voltage up regulation
@@ -83,8 +87,6 @@ wrapper.prepare.grid <- function(grid, check = F, solution_space_combined = NULL
     grid$ctr[[1]]$U_max <- U_set*(1 + 0.08)
     grid$ctr[[1]]$verbose <- 2
     grid <- solve.LF(grid = grid, meth = "G", ctr = c("OLTC"), warm = F, verbose = 0)
-  } else {
-    grid <- solve.LF(grid = grid, warm = F, verbose = 0)
   }
   
   return(grid)

@@ -181,7 +181,7 @@ plot.grid.igraph <- function(graph, grid, coords = NA) {
   E(graph)[switch_line_nb]$color <- "black" #can't be overused(extrem max_I) --> only allowed element with other color
   
   # mark overhead lines
-  if (!exists('line_types') | !exists('trafo_types')) data(types)
+  if (!exists('line_types') | !exists('trafo_types')) lazyLoad('types')
   overhead_line_types <- line_types$type[line_types$code == "OL1"]
   overhead_line_numbers <- which(grid$lines$model %in% overhead_line_types) # remember! line and edge numbers are identical
   E(graph)[overhead_line_numbers]$lty <- 2 # 2=dashed
