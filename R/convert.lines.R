@@ -41,7 +41,7 @@ convert.lines <- function(grid, verbose = 1) {
   lines$seriel <- NA
   lines$parallel <- NA
   lines$element_map <- ""
-
+  
   if (verbose >= 2) print(summary(lines))
   if (verbose >= 2) print(sprintf("Vref: %f V", Vref))
 
@@ -239,6 +239,7 @@ convert.lines.lines <- function(lines, transm_ratio,frequency,verbose){
   l <- lines$line_l[lines_places]
 
   transm_ratio_line <- transm_ratio[lines$begin[lines_places]]
+  
   lines$seriel[lines_places] <-  1/(R*l + (L/1000*2*pi*frequency*l)*1i)*transm_ratio_line^2
   lines$parallel[lines_places] <- (G/1000000/2*l + 1i*2*pi*frequency*C/1000000000/2*l)*transm_ratio_line^2
   lines$element_map[lines_places] <- "line"

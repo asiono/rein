@@ -20,6 +20,8 @@ replace_line_types <- function(lines, line_types = NA, verbose = 1) {
     line_match <- which(lines$model == line_types$type[i])
     
     if (length(line_match) > 0) {
+      
+      # get lines length from lines$element if it's not yet present
       if (is.null(lines$line_l)) {
         lines$line_l <- NA
         for (j in line_match) {

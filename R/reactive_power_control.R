@@ -37,7 +37,8 @@ reactive_power_control <- function(lines, S_cal, verbose = 0) {
     }
     PF_matrix$line_length[i] <- PF_matrix$line_length[i] - PF_matrix$line_length[1]
   }
-  PF_matrix <- cbind(PF_matrix, S_cal)
+  
+  PF_matrix <- merge(PF_matrix, as.data.frame(S_cal), by.x = "end", by.y = 0)
   
   #setting power factor
   #power factor are set based on distance from transformer and load

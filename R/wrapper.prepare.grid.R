@@ -15,7 +15,7 @@
 ################################################################################
 
 
-wrapper.prepare.grid <- function(grid, check = F, solution_space_combined = NULL, U_set = NULL, verbose = 0){
+wrapper.prepare.grid <- function(grid, check = F, solution_space_combined = NULL, U_set = NULL, oltc.trigger = F, verbose = 0){
   source('~/Documents/simtool/simtool/SimTOOL/R/solve.LF.R')
   #setwd('~/Documents/rein_lp/rein/')
   source('R/convert.lines.R')
@@ -49,7 +49,7 @@ wrapper.prepare.grid <- function(grid, check = F, solution_space_combined = NULL
     #change the power into kilo-Watt
     actual <- grid$S_cal*3/1000
   }
-
+  
   grid <- create.power(grid, verbose = verbose,  actual = actual)
   if (verbose > 0) print('################# processing function: solve.LF #################')
   #add the parallel lines into U_cal matrice for calculation
@@ -61,7 +61,7 @@ wrapper.prepare.grid <- function(grid, check = F, solution_space_combined = NULL
   
   grid <- solve.LF(grid = grid, warm = F , save = F, fast = F, verbose = verbose)
   
-  if (any(grepl('OLTC', grid$lines$model))) {
+  if (any(grepl('OLTC', grid$lines$model)) & oltc.trigger == T) {
     #need to add trafo in the element because solve.LF in SimTOOL requires checking it
     grid$lines$element[which(grid$lines$type == 'trafo')] <- as.character('trafo')
     #create controller list

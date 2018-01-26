@@ -10,7 +10,7 @@ calc_trafo_I_b <- function(grid, replacement_trafo, verbose = 3) {
 
     grid_calc$lines[,c('trafo_U1', 'trafo_U2')] <- grid$lines[,c('trafo_U1', 'trafo_U2')]
     
-    source('~/Documents/rein2/rein.git1/reIn/R/wrapper.prepare.grid.R')
+    source('R/wrapper.prepare.grid.R')
     grid_calc <- wrapper.prepare.grid(grid_calc)
     
     #adding the trans ratio of the grid

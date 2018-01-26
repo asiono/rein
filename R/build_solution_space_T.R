@@ -46,7 +46,8 @@ build_solution_space_T <- function(grid, expansion_alternatives, verbose = 0){
     solution_space_T[,'trafo_U1'] <- grid_assets$trafo_U1
     solution_space_T[,'trafo_U2'] <- grid_assets$trafo_U2
     solution_space_T[,'transmissio_ratio'] <- grid_assets$transmissio_ratio
-    solution_space_T[,c('begin', 'end', 'ID', 'type', 'length_km', 'Category')] <- grid_assets[,c('begin', 'end', 'ID', 'type', 'length_km', 'Category')]
+    
+    solution_space_T[,c('begin', 'end', 'type', 'length_km', 'Category')] <- grid_assets[,c('begin', 'end', 'type', 'length_km', 'Category')]
 
   #calculate I_b for each trafo type
   replacement_trafo <- as.data.frame(solution_space_T[which(solution_space_T$model != 

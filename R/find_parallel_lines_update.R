@@ -121,7 +121,7 @@ find_parallel_lines_update <- function(lines){
   
   parallel_to <- sort_begin_end_by_grid_order(lines, parallel_to)
   
-  check_number_parallel_lines(parallel_lines, lines , root_node)
+  check_number_parallel_lines(parallel_lines, lines)
 
   return(list("parallel_lines" = parallel_lines, "parallel_to" = parallel_to))
 }

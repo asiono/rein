@@ -9,7 +9,8 @@ replace_trafo_types <- function(lines, trafo_types = NA, verbose = 0) {
   if (verbose >= 3) print(lines$element)
   
   #checking if data(types) has already been executed 
-  if (is.na(trafo_types)) lazyLoad('types')
+  if (is.na(trafo_types)) lazyLoad("types")
+  assign('trafo_types', trafo_types, envir = .GlobalEnv)
   
   #loop trafo type by rows 
   for (i in 1:nrow(trafo_types)) {
@@ -18,7 +19,7 @@ replace_trafo_types <- function(lines, trafo_types = NA, verbose = 0) {
     #if hits
     if (length(trafo_match) > 0) {
       
-      #get trafo upper and lower voltage level
+      #get trafo upper and lower voltage level  from lines$lement if it's not yet exist
       if (is.null(lines$trafo_U1) | is.null(lines$trafo_U2)) {
       type_list <- strsplit(x = lines$element[which(lines$type == 'trafo')],split = ",")
       type_vector0 <- unlist(type_list)
@@ -38,6 +39,7 @@ replace_trafo_types <- function(lines, trafo_types = NA, verbose = 0) {
       lines[trafo_match, 'trafo_i0'] <- trafo_types$i0[i]
       lines[trafo_match, 'trafo_Pfe'] <- trafo_types$PFe[i]
       lines[trafo_match, "max_I"] <- trafo_types$max_I[i]
+      lines[trafo_match, "element"] <- "trafo"
     }
   }
 

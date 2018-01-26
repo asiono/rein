@@ -35,7 +35,7 @@ grid.to.igraph <- function(lines, directed = F) {
 ### set line lengths as edge weights
 igraph.line.lengths <- function(graph,lines) {
   library(igraph)
-  line_lengths <- get_line_length(lines$element)
+  line_lengths <- lines$line_l
   if (length(E(graph)) != length(line_lengths)) {
     stop("igraph.line.lengths: Number of edges of the graph is unequal 
          to the numer of lines of the grid. Line lengths can't be determined")
