@@ -28,34 +28,34 @@ find_parallel_lines_update <- function(lines){
   #Get root node (todo: What if a grid has multiple transformers / Sammelschienen?)
   root_node <- lines$end[grep(lines$type, pattern = "trafo")]
   
-  distance_in_edges = melt(distances(graph, v = root_node, to = V(graph), 
+  distance_in_edges <- melt(distances(graph, v = root_node, to = V(graph), 
                                      weights = NA), value.name = "Edge_count")
-  distance_in_meters = melt(distances(graph, v = root_node, to = V(graph)), 
+  distance_in_meters <- melt(distances(graph, v = root_node, to = V(graph)), 
                             value.name = "Distance_m")
   
-  parallel_lines = merge(distance_in_edges, distance_in_meters)
+  parallel_lines <- merge(distance_in_edges, distance_in_meters)
   
-  parallel_lines$Distance_m = parallel_lines$Distance_m/1000  
-  colnames(parallel_lines) = c("begin", "end","Edge_count", "length_km")
+  parallel_lines$Distance_m <- parallel_lines$Distance_m/1000  
+  colnames(parallel_lines) <- c("begin", "end","Edge_count", "length_km")
   
   #remove loops and line parallel to the transformer
-  parallel_lines = parallel_lines[(parallel_lines$Edge_count > 0) & (parallel_lines$end != "GRID") ,] 
+  parallel_lines <- parallel_lines[(parallel_lines$Edge_count > 0) & (parallel_lines$end != "GRID") ,] 
   
   #remove parallel lines that are connected to a leaf node (degree = 1)
   degree = data.frame(degree(graph))
-  colnames(degree) = "Degree"
-  parallel_lines = merge(parallel_lines, degree, by.x = "end", by.y = "row.names", sort = F)
-  parallel_lines  = parallel_lines[(parallel_lines$Degree > 1),]
+  colnames(degree) <- "Degree"
+  parallel_lines <- merge(parallel_lines, degree, by.x = "end", by.y = "row.names", sort = F)
+  parallel_lines  <- parallel_lines[(parallel_lines$Degree > 1),]
   
   #remove unnecessary columns
-  parallel_lines[,"Edge_count"] = NULL
-  parallel_lines[,"Degree"] = NULL
-  rownames(parallel_lines) = NULL
+  parallel_lines[,"Edge_count"] <- NULL
+  parallel_lines[,"Degree"] <- NULL
+  rownames(parallel_lines) <- NULL
   
   #Create ID for parallel lines
-  parallel_lines = cbind(parallel_lines,  paste0("Parallel_", 
+  parallel_lines <- cbind(parallel_lines,  paste0("Parallel_", 
                                                  seq(1:nrow(parallel_lines))))
-  colnames(parallel_lines)[ncol(parallel_lines)] = "ID"
+  colnames(parallel_lines)[ncol(parallel_lines)] <- "ID"
   
   parallel_lines_names <- paste0("Parallel_", seq(1:nrow(parallel_lines)))
   parallel_lines_chosen <- diag(nrow(parallel_lines))
@@ -64,20 +64,20 @@ find_parallel_lines_update <- function(lines){
   parallel_lines <- cbind(parallel_lines, parallel_lines_chosen)
   
   #Create Category
-  parallel_lines$Category = "P" 
+  parallel_lines$Category <- "P" 
   
   #determine to which original lines the parallel lines are parallel to
   {
   
   #data frame to store original lines and parallel lines
   graph <- as.undirected(graph)
-  parallel_to = lines[,c("begin", "end")]
+  parallel_to <- lines[,c("begin", "end")]
   parallel_to <- data.frame(get.edgelist(graph))
-  colnames(parallel_to) = c("begin", "end")
+  colnames(parallel_to) <- c("begin", "end")
 
-  end_nodes_parallel_lines = V(graph)[as.character(parallel_lines$end)]
+  end_nodes_parallel_lines <- V(graph)[as.character(parallel_lines$end)]
 
-  parallel_path = shortest_paths(graph, from = root_node,
+  parallel_path <- shortest_paths(graph, from = root_node,
                                  to = end_nodes_parallel_lines,
                                  weights = NULL, output = "vpath")$vpath
   
@@ -85,17 +85,17 @@ find_parallel_lines_update <- function(lines){
   for (path in (1:length(parallel_path))) {
     
     #create a subgraph containing only the path 
-    subgraph = induced_subgraph(graph,unlist(parallel_path[path]))
+    subgraph <- induced_subgraph(graph,unlist(parallel_path[path]))
     
     #get edgelist of subgraph
-    edgelist = data.frame(get.edgelist(subgraph))
-    colnames(edgelist) = c("begin", "end")
+    edgelist <- data.frame(get.edgelist(subgraph))
+    colnames(edgelist) <- c("begin", "end")
     
     #assign the corresponding parallel line
-    current_parallel_line = as.character(parallel_lines$ID[path])
-    edgelist[,current_parallel_line] = 1   
+    current_parallel_line <- as.character(parallel_lines$ID[path])
+    edgelist[,current_parallel_line] <- 1   
     
-    parallel_to = merge(parallel_to, edgelist, by = c("begin", "end"), all.x = T
+    parallel_to <- merge(parallel_to, edgelist, by = c("begin", "end"), all.x = T
                         , sort = F)
   }
   colnames(parallel_to)[3:ncol(parallel_to)] <- paste0('Parallel_',

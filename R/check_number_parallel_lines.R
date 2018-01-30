@@ -23,8 +23,7 @@ check_number_parallel_lines <- function(parallel_lines, lines){
   # number of nodes connected to LV side of transformer,
   # number of leaf nodes,
   # hv and lv side of transformer
-  nb_pline_target <- length(unique(c(grid$lines$begin, grid$lines$end))) - 
-    sum(!is.na(match(lines$begin, lines$end[lines$type == 'trafo']))) - sum(is.na(match(lines$end, lines$begin))) -
+  nb_pline_target <- length(unique(c(grid$lines$begin, grid$lines$end))) - sum(is.na(match(lines$end, lines$begin))) -
     2 * nrow(lines[lines$type == 'trafo',])
   
   if (nb_plines != nb_pline_target[[1]]) {
