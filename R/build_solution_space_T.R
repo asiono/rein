@@ -1,31 +1,16 @@
 ################################################################################
-# Description:
-#'the function creates the solutions space for which the grid expansion      
-#'
-#' @title         build_solution_space
+#' @title         build_solution_space_T
+#' @description   Function to create possible solution for grid reinforcement on transformer
 #' 
-#                   name         type                   description  
-#' @param  \strong{grid}       'SimTOOL container of grid data
-#' @param  \strong{types}      'character vector specifying which assets to 
-#'                             consider.  trafo and line are possible
-#' @param  \strong{verbose}    'verbosity level 
-
-#' @details 
-#' \strong{type} is a    
-#' @return 
-#' Output is a dataframe. Rows contain the lines, the expansion alternatives for 
-#' the lines and the voltage drop for the expansion alternatives. 
-#'@keywords paths grid_paths, solution space
-#'@author        Wolfgang Biener             wolfgang.biener(at)ise.fraunhofer.de
+#' @param grid   List containing initial grid data.
+#' @param expansion_alternatives   data frame containing available grid assets for either line or transformator reinforcement
+#' @param verbose   Value greater than zero to display step by step of reinforcement
+#' 
+#' @return Output is a dataframe containing possible transformator types in the grid with its specifications
 ################################################################################
 
-
 build_solution_space_T <- function(grid, expansion_alternatives, verbose = 0){
-  source('R/calculate_impedances.R')
-  source('R/calc_trafo_I_b.R')
-  
-  require(plyr, quietly = T)
-  
+
   #get all assets of type i of the grid
   grid_assets <- create_grid_assets(grid, type = 'trafo')
   
@@ -36,7 +21,8 @@ build_solution_space_T <- function(grid, expansion_alternatives, verbose = 0){
   grid_assets$model = NULL
   #grid_assets$max_I = NULL
   #if there is more than 1 trafo in the original grid
-  expansion_alternatives$trafo <- mefa:::rep.data.frame(expansion_alternatives$trafo, times = nrow(grid_assets))
+  expansion_alternatives$trafo <- expansion_alternatives$trafo[rep(seq_len(nrow(expansion_alternatives$trafo)), nrow(grid_assets)), ]
+  
   solution_space_T <- merge(y = grid_assets, x = expansion_alternatives$trafo , by.x = c("model", "S", "con", "uk", "PCu", "i0", "PFe", "max_I"), 
                             by.y = c("comment", "trafo_Sn", "trafo_group", "trafo_uk", "trafo_Pcu", "trafo_i0", "trafo_Pfe", "max_I"), all = T)
   solution_space_T[,'type'] <- 'trafo'
@@ -62,8 +48,6 @@ build_solution_space_T <- function(grid, expansion_alternatives, verbose = 0){
                                            solution_space = solution_space_T,
                                            type = 'trafo')  
   #Voltage drops
-  source('~/Documents/rein2/rein.git1/reIn/R/calculate_voltage_drop_per_line.R')
-  
   U_T <- calculate_voltage_drop_per_line(
     Vref = grid$Vref, R = solution_space_T$R, X = solution_space_T$X, 
     I = solution_space_T$I_b*solution_space_T$transmissio_ratio)

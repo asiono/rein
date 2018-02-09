@@ -1,3 +1,11 @@
+################################################################################
+#' @title replace_trafo_types
+#' @description get transformer parameter set based on its type and database Data/types.RData
+#' @param lines data frame from grid data containing grid assets and its parameters
+#' @param trafo_types database containing all transformer types and its specification
+#' @param verbose  Verbosity level. value greater than zero to display step by step of reinforcement
+#' @return lines data frame with all parameter set
+################################################################################
 
 replace_trafo_types <- function(lines, trafo_types = NA, verbose = 0) {
 
@@ -10,8 +18,7 @@ replace_trafo_types <- function(lines, trafo_types = NA, verbose = 0) {
   
   #checking if data(types) has already been executed 
   if (is.na(trafo_types)) lazyLoad("types")
-  assign('trafo_types', trafo_types, envir = .GlobalEnv)
-  
+
   #loop trafo type by rows 
   for (i in 1:nrow(trafo_types)) {
        trafo_match <- which(lines$model == trafo_types$type[i])
@@ -39,7 +46,7 @@ replace_trafo_types <- function(lines, trafo_types = NA, verbose = 0) {
       lines[trafo_match, 'trafo_i0'] <- trafo_types$i0[i]
       lines[trafo_match, 'trafo_Pfe'] <- trafo_types$PFe[i]
       lines[trafo_match, "max_I"] <- trafo_types$max_I[i]
-      lines[trafo_match, "element"] <- "trafo"
+      lines[trafo_match, "element"] <- as.character("trafo,x,x,x,x,x,x,x")
     }
   }
 

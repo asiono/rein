@@ -1,26 +1,15 @@
 ################################################################################
-# Description:
-#' this function creates the current constrains for a grid with pararallel lines      
-#'
-#' @title         create_current_constrains_parallel_lines
-#' 
-#                   name         type                   description  
-#' @param  \strong{solution_space}       'data frame containing information for 
-#' possible expansion alternatives. 
-#' @param  \strong{big_M}                'Parameter to activate deactive side conditions  
-#' @param  \strong{verbose}    'verbosity level 
-
-# #@details 
-#' 
-#' @return 
-#' This function creates the side conditions concernig the rated current for non parallel lines. 
+#' @title   create_current_constrains_parallel_lines
+#' @description   this function creates the current constrains for a grid with pararallel lines
+#' @param solution_space   dataframe containing possible cable types in the grid and its specifications
+#' @param big_M   big M value for current limit optimization
+#' @param verbose   Value greater than zero to display step by step of reinforcement
+#' @return   This function creates the side conditions concernig the rated current for non parallel lines. 
 #' The ouput is a list. That contains A, b and const.dir. 
-#'@keywords optimization , solution space
-#'@author        Wolfgang Biener/Gunther Gust         wolfgang.biener(at)ise.fraunhofer.de
 ################################################################################
 
-create_current_constrains_parallel_lines <- function(solution_space, 
-                                                        big_M,verbose = 0){
+create_current_constrains_parallel_lines <- function(solution_space, big_M,verbose = 0) {
+  
   #Mapping of expansion alternatives to grid edges
   grid_edges <- unique(solution_space$A[,c("begin", "end")])
   

@@ -1,23 +1,11 @@
 ################################################################################
-#  Description:
-#'  function to calculate the installation cost for a line 
-#'  for trafos the installation is included within the material cost
-# 
 #' @title         get_installation_cost
-#' 
-#                 name         type                   description  
-#' @param  \strong{line}       'one line or a dataframe of lines from a SimTOOL line 
-#' 
-#'  
-#' @return  installation cost of a specific segment 
-#
-#' @details Material costs are in €/km in the costs data. 
-#'          Where installation costs are given in €/m. 
-#' @seealso
-#' \code{\link{replace_line_by_bigger}}, \code{\link{replace_line_by_parallel}}
-#' @author        Wolfgang Biener             wolfgang.biener(at)ise.fraunhofer.de
+#' @description   calculate the installation cost for a line 
+#' @param line lines_data frame of package SimTOOL
+#' @param verbose   Value greater than zero to display step by step of reinforcement
+#' @return  installation cost of a specific segment. Material costs are in €/km in the costs data. 
+#' Where installation costs are given in €/m. 
 ################################################################################
-
 
 get_installation_cost <- function(line, verbose = 0){
   nrow_line <- nrow(line)  

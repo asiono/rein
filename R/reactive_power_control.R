@@ -1,23 +1,12 @@
 ################################################################################
-# Description:
-#' this function change feed-in power based on specific power factor       
-#'
-#' @title         reactive_power_control
-#' 
-#                   name         type                   description  
-#' @param  \strong{lines}      'lines data of the grid 
-#' @param  \strong{S_cal}      'complex vector giving all powers in internal notation for cal_nodes 
-#' @param  \strong{verbose}    'verbosity level 
-
-# #@details 
-#' 
-#' @return 
-#' This function change the value of active and reactive power of the feed-in. 
+#' @title  reactive_power_control
+#' @description change feed-in power based on specific power factor 
+#' @param lines lines data of the grid
+#' @param S_cal omplex vector giving all powers in internal notation for cal_nodes
+#' @param verbose verbosity level
+#' @return This function change the value of active and reactive power of the feed-in. 
 #' The ouput is new complex number of feed-in power. 
-#'@keywords reactive power control, power factor
-#'@author        Wolfgang Biener/Andre Siono         andre.siono(at)ise.fraunhofer.de
 ################################################################################
-
 
 reactive_power_control <- function(lines, S_cal, verbose = 0) {
   

@@ -1,31 +1,18 @@
 ################################################################################
-#  Description:
-#'  function makes an igraph out of grid$lines. as result various functions of the large package "igraph" are applicable. e.g. different plots or shortest path calculations
-# 
 #' @title         grid.to.igraph
-#' 
-#                 name         type                   description  
-#' @param  \strong{lines}       'line_container of SimTOOL 
-#' @param  \strong{directed}    'logical giving if the graph shall be handled as 
-#' F is the default value and signifies undirected. 
-#' 
-#' @details 
-#' 
-#' possible extensions:
-#'  solutions for the different data formats provided by igraph --> additional argument "format"
+#' @description   makes an igraph out of grid$lines. as result various functions of the 
+#' large package "igraph" are applicable. e.g. different plots or shortest path calculations
+#' @param lines   lines_data frame of package SimTOOL
+#' @param directed logical giving if the graph shall be handled as. F is the default value and signifies undirected. 
+#' @details possible extensions:
+#' solutions for the different data formats provided by igraph --> additional argument "format"
 #' printing: new vertice shape for Grid and Trafo nodes (manual page 279+)
 #' use argument layout to generate reproduceable plots (coordinates are recently random)
-
-#'  
 #' @return  igraph graph object
-# @seealso
-#' @author        Benjamin Krug            Benjamin.Krug(at)ise.fraunhofer.de
+#' @importFrom graphics plot par
 ################################################################################
 
-
-
 grid.to.igraph <- function(lines, directed = F) {
-  library(igraph)
   relations <- data.frame(begin = lines$begin, end = lines$end, ncol = 2)
   graph <- graph.data.frame(relations, directed = directed)
   graph <- igraph.line.lengths(graph, lines)
@@ -34,7 +21,6 @@ grid.to.igraph <- function(lines, directed = F) {
 
 ### set line lengths as edge weights
 igraph.line.lengths <- function(graph,lines) {
-  library(igraph)
   line_lengths <- lines$line_l
   if (length(E(graph)) != length(line_lengths)) {
     stop("igraph.line.lengths: Number of edges of the graph is unequal 
@@ -52,8 +38,6 @@ igraph.line.lengths <- function(graph,lines) {
 #################################################################################################
 
 plot.grid.igraph <- function(graph, grid, coords = NA) {
-  library(igraph)
-  #library(png)
   V(graph)$size <- 5
   V(graph)$color <- "black"
   V(graph)$shape <- "circle"

@@ -1,52 +1,42 @@
 ################################################################################
-# Description:
-#' this function creates input matrices and vectors for the optimizer       
-#'
 #' @title         build_optimization_matrices
+#' @description   This function creates the side conditions and objective function for the optimization problem.
 #' 
-#                   name         type                   description  
-#' @param  \strong{solution_space}       'data frame containing information for 
-#' possible expansion alternatives. 
-#' @param  \strong{lines}                'lines data of the grid 
-#' @param  \strong{allowed_deviation}    'uncertainity of voltage calculation that is taken as security margin in pu
-#' @param  \strong{allowed_voltage}      'allowed voltage rise in pu
-#' @param  \strong{verbose}    'verbosity level 
-
-# #@details 
-#' 
-#' @return 
-#' This function creates the side conditions and objective function for the optimization problem. 
-#' The ouput is a list. That contains A, b and c. 
-#'@keywords optimization , solution space
-#'@author        Wolfgang Biener/Gunther Gust         wolfgang.biener(at)ise.fraunhofer.de
+#' @param solution_space   list of possible reinforcement measures for lines, transformator and parallel lines.
+#' @param iteration_count   counter for reinforcement iteration.
+#' @param lines   parameters of original grid assets.
+#' @param oltc.trigger   indication for OLTC transformator usage.
+#' @param allowed_voltage   limit of voltage deviation.
+#' @param verbose   Value greater than zero to display step by step of reinforcement.
+#' @return List of right hand, operatot and left hand side of optimization equations
+#' @keywords optimization , solution space
 ################################################################################
 
 #todo see if it is possible to build a funktion that prepares less if the same grid with different loads is calculated again. 
+
 build_optimization_matrices <- function(solution_space, iteration_count, lines, oltc.trigger, allowed_voltage = 0.03, verbose = 0){
-  source('R/create_voltage_constraints_update.R')
-  source('R/create_current_constraints.R')
   
-  if (iteration_count <= 3 ) {
+  if (iteration_count <= 2 ) {
     allowed_voltage <- allowed_voltage 
   } else {
-    allowed_voltage <- allowed_voltage  - (iteration_count - 3)/650
+    allowed_voltage <- allowed_voltage  - (iteration_count - 3)/450
   }
   
   # parameter to acitvate deactivate side conditions, see big_M Method 
   big_M_current <- 10000
   big_M_voltage <- 0.5
   
-  library(plyr)
   #Objective function coeficients (c)
   cT <- solution_space$T$cost
   c1 <- solution_space$A$cost
   c2 <- solution_space$P$cost 
   
   matrices_I <- create_current_constraints(solution_space, big_M = big_M_current)
+  
   matrices_U <- create_voltage_constraints(solution_space, big_M = big_M_voltage, allowed_voltage, iteration_count, oltc.trigger)
  
-  matrices_one_expansion <- create_one_expansion_constraint(solution_space,
-                                                            big_M = big_M_voltage)
+  matrices_one_expansion <- create_one_expansion_constraint(solution_space)
+  
   # putting all together 
   A <- rbind(matrices_I$A/1000,matrices_U$A,matrices_one_expansion$A)
   b <- c(matrices_I$b/1000,matrices_U$b,matrices_one_expansion$b)

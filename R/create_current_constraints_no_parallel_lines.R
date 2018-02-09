@@ -1,30 +1,15 @@
 ################################################################################
-# Description:
-#' this function creates the current constraints for the original grid      
-#'
-#' @title         create_current_constraints_no_parallel_lines
-#' 
-#                   name         type                   description  
-#' @param  \strong{solution_space}       'data frame containing information for 
-#' possible expansion alternatives. 
-#' @param  \strong{big_M}                'Parameter to activate deactive side conditions  
-#' @param  \strong{verbose}    'verbosity level 
-
-# #@details 
-#' 
-#' @return 
-#' This function creates the side conditions concerning the rated current for non-parallel lines. 
-#' The ouput is a list that contains A, b and const.dir. 
-#'@keywords optimization , solution space
-#'@author        Wolfgang Biener/Gunther Gust         wolfgang.biener(at)ise.fraunhofer.de
+#' @title   create_current_constraints_no_parallel_lines
+#' @description   this function creates the current constraints for the original grid
+#' @param solution_space   dataframe containing possible cable types in the grid and its specifications
+#' @param big_M   big M value for current limit optimization
+#' @param verbose   Value greater than zero to display step by step of reinforcement
+#' @return   This function creates the side conditions concernig the rated current for non parallel lines. 
+#' The ouput is a list. That contains A, b and const.dir. 
 ################################################################################
 
-create_current_constraints_no_parallel_lines <- function(solution_space, 
-                                                         big_M,verbose = 0){
-   #todo These constraints have to be simplyfied (and made more exact) (see Gunther's note book)
-  #than all the conditions are needed to be activated deactivated by big_M
-  #Mapping of expansion alternatives to grid edges
-  source('~/Documents/rein2/rein.git1/reIn/R/get_expansion_alternatives.R')
+create_current_constraints_no_parallel_lines <- function(solution_space, big_M,verbose = 0){
+  
   grid_edges <- unique(solution_space$A[,c("begin", "end")])
   grid_edges_I = cbind(grid_edges, diag(nrow(grid_edges)))
   mapping_EA_GE <- merge(solution_space$A[,c("begin", "end", "max_I",'I_b')], 
@@ -43,16 +28,13 @@ create_current_constraints_no_parallel_lines <- function(solution_space,
   if (any(parallel_lines_places)) {
     parallel_lines_places_begin_end <- (parallel_lines_places 
                                         | grepl('begin|end', colnames(solution_space$A)))
-    EA <- get_expansion_alternatives(type = 'line')
     
     parallel_opportunities <- unique(solution_space$A[,parallel_lines_places_begin_end])
     parallel_opportunities <- parallel_opportunities[,-c(1,2)]
-    merged_parallel_opportunities <- merge(EA$model,t(parallel_opportunities))
+    merged_parallel_opportunities <- merge(unique(solution_space$A$model),t(parallel_opportunities))
     merged_parallel_opportunities <- merged_parallel_opportunities[,-1]
     AI_1_2 <- matrix(big_M, nrow = ncol(merged_parallel_opportunities),ncol = nrow(merged_parallel_opportunities))
-    # naming the colums after the end point of the parallel line 
-    # needed for further calculations 
-    
+
     colnames(AI_1_2) <- solution_space$P$end
     
 

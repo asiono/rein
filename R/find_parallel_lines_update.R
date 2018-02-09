@@ -1,36 +1,25 @@
 ################################################################################
-# Description:
-#'Identifies possible locations for parallel lines for grid expansion    
-#'
 #' @title         find_parallel_lines
-#' 
-#                   name         type                   description  
-#' @param  \strong{lines}     'lines of the grid (part of SimTOOL container of grid data)
-#' @details 
-#' Starting point for all parallel lines is the busbar at the transformer. Possible end points are all nodes except leaf nodes.   
-#' @return 
-#' Returns a dataframe with possible begin and end nodes of parallel lines together with the line length 
-#'@keywords parallel_lines
-#'@author        Gunther Gust             gunther.gust(at)is.uni-freiburg.de
+#' @description   Identifies possible locations for parallel lines for grid expansion. 
+#' Starting point for all parallel lines is the busbar at the transformer. 
+#' Possible end points are all nodes except leaf nodes.   
+#' @param lines   lines_data frame of package SimTOOL
+#' @return dataframe with possible begin and end nodes of parallel lines together with the line length. 
 ################################################################################
 
-
-#todo: Update documentation
 #todo : update length calculation nur bis zum vorletzten knoten. 
 #todo : spannungsabfall ueber letzten Stueck bleibt gleich
 #todo: strom durch alten leitungen verringert sich um den der durch das stueck geht. 
 
 find_parallel_lines_update <- function(lines){
-  source('R/check_number_parallel_lines.R')
-  source('R/grid.to.igraph.R')
-  require(igraph, quietly = T)
   graph <- grid.to.igraph(lines, directed = T)
+  
   #Get root node (todo: What if a grid has multiple transformers / Sammelschienen?)
   root_node <- lines$end[grep(lines$type, pattern = "trafo")]
   
-  distance_in_edges <- melt(distances(graph, v = root_node, to = V(graph), 
+  distance_in_edges <- reshape2::melt(distances(graph, v = root_node, to = V(graph), 
                                      weights = NA), value.name = "Edge_count")
-  distance_in_meters <- melt(distances(graph, v = root_node, to = V(graph)), 
+  distance_in_meters <- reshape2::melt(distances(graph, v = root_node, to = V(graph)), 
                             value.name = "Distance_m")
   
   parallel_lines <- merge(distance_in_edges, distance_in_meters)

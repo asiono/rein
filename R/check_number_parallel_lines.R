@@ -1,19 +1,10 @@
 ################################################################################
-# Description:
-#'Checks if the number of obtained parallel lines is correct 
-#'
-#' @title         check_number_parallel_lines
-#' 
-#                   name         type                   description  
-#' @param  \strong{lines}              'lines of the grid (part of SimTOOL container of grid data)
-#' @param  \strong{parallel_lines}     'Dataframe containing all parallel lines
-#' @param  \strong{rootnode}           'node from which parallel lines start. normally lv side of transformer
-#' @return 
-#' throws a warning if number of parallel lines is wrong 
-#'@keywords parallel_lines
-#'@author        Wolfgang Biener             wolfgang.biener(at)ise.fraunhofer.de
+#' @title    check_number_parallel_lines
+#' @description Checks if the number of obtained parallel lines is correct 
+#' @param parallel_lines   number of parallel lines created
+#' @param lines   data frame from grid data containing grid assets and its parameters
+#' @return  warnings if the number of created parallel lines is not correct
 ################################################################################
-
 
 check_number_parallel_lines <- function(parallel_lines, lines){
   # nb of found plines 

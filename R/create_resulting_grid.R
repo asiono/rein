@@ -1,24 +1,10 @@
 ###############################################################################
-#  Description:
-#' This function create resulting grid from optimization result and reanalyze it with SimTOOL.  
-#' \code{chosen_line_type}. 
-#'  
-#' @title         calculate_delta_voltage
-#' 
-#                 name         type                   description  
-#' @param  \strong{grid}       'SimTOOL container of grid data
-#' @param  \strong{solution_space_combined}    'solution space of the optimization problem. consisting of only one matrix. 
-#' @param  \strong{expansion_measures}'from the optimizer chosen solution 
-
-#'
-#'
-# @details 
-#' the function calculates the delta U that is taken into account from the optimizer. 
-#' This is done for every node in the grid. It is only viable for branched grids. 
-#' 
-#' @seealso
-#' \code{\link{grid.to.igraph}} 
-#' @author       Wolfgang Biener      wolfgang.biener(at)ise.fraunhofer.de
+#' @title  create_resulting_grid
+#' @description This function create resulting grid from optimization result.
+#' @param grid   List, data frame containing information of grid to be optimized.
+#' @param solution_space_combined   Selected solution based on optimization result
+#' @param verbose   Value greater than zero to display step by step of reinforcement
+#' @return  rebuilt grid but not yet calculated
 ################################################################################
 
 create_resulting_grid <- function(grid, solution_space_combined,  verbose = 0 ) {

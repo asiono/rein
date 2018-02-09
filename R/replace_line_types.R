@@ -1,11 +1,13 @@
-######################################################################################################################################################
-#############################################   replace_line_types   #################################################################################
-######################################################################################################################################################
-# the function replaces linetypes specified by a name like NAYY 4x 150 by its parameterset. The parameterset is stored in data(types)
-
+################################################################################
+#' @title replace_line_types
+#' @description get line parameter set based on its type and database Data/types.RData
+#' @param lines data frame from grid data containing grid assets and its parameters
+#' @param line_types database containing all line types and its specification
+#' @param verbose  Verbosity level. value greater than zero to display step by step of reinforcement
+#' @return lines data frame with all parameter set
+################################################################################
 
 replace_line_types <- function(lines, line_types = NA, verbose = 1) {
-  #local copies
   lines$element <- as.character(lines$element)
 
   if (verbose >= 1) message("replace_line_types  data.frame lines")
@@ -42,6 +44,10 @@ replace_line_types <- function(lines, line_types = NA, verbose = 1) {
       lines[line_match, 'line_C'] <- line_types$C[i]
       lines[line_match, "max_I"] <- line_types$max_I[i]
     }
+  }
+  
+  if (any(is.na(lines$element))) {
+    lines$element[which(is.na(lines$element) & lines$type != "trafo")] <- "line"
   }
 
   return(lines)

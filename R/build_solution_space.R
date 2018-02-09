@@ -1,30 +1,17 @@
 ################################################################################
-# Description:
-#'the function creates the solutions space for which the grid expansion      
-#'
-#' @title         build_solution_space
-#' 
-#                   name         type                   description  
-#' @param  \strong{grid}       'SimTOOL container of grid data
-#' @param  \strong{types}      'character vector specifying which assets to 
-#'                             consider.  trafo and line are possible
-#' @param  \strong{verbose}    'verbosity level 
-
-#' @details 
-#' \strong{type} is a    
-#' @return 
-#' Output is a dataframe. Rows contain the lines, the expansion alternatives for 
-#' the lines and the voltage drop for the expansion alternatives. 
-#'@keywords paths grid_paths, solution space
-#'@author        Wolfgang Biener             wolfgang.biener(at)ise.fraunhofer.de
+#' @title   build_solution_space
+#' @description   function to collect possible asset types for lines, transformer and possible parallel lines
+#' in the grid.
+#' @param grid   List containing initial grid data.
+#' @param avail_asset_types   List of available line and trafo types for replacement
+#' @param verbose   Value greater than zero to display step by step of reinforcement
+#' @param line_types   database containing all line types and its specification
+#' @param trafo_types    database containing all line types and its specification
+#' @return Output is list containing 3 dataframe containing possible asset types in the grid and its specifications
 ################################################################################
 
+build_solution_space <- function(grid, avail_asset_types, verbose = 0, line_types = NA, trafo_types = NA) {
 
-build_solution_space_update <- function(grid, avail_asset_types, verbose = 0, line_types = NA, trafo_types = NA) {
-  source('R/build_solution_space_A.R')
-  source('R/build_solution_space_P.R')
-  source('R/build_solution_space_T.R')
-  
   #checking if data(types) has already been executed 
   if (is.na(line_types) | is.na(trafo_types)) lazyLoad('types')
   

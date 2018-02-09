@@ -1,8 +1,19 @@
-#to do documentation
+################################################################################
+#' @title plot_grid_rein
+#' @description   create a visual graph of the grid along with each line's usage and each node's voltage deviation
+#' @param grid   List containing grid data.
+#' @param U_set  lower voltage level in the grid 
+#' @param vertex_label logical to show node names and its voltage deviation
+#' @param edge_label logical to show line types and its usage
+#' @param allowed_voltage allowed voltage deviation limit
+#' @return  plotted graph 
+#' @importFrom grDevices colorRamp rgb
+#' @importFrom graphics plot
+#' @export
+################################################################################
 
 plot_grid_rein = function(grid, U_set = 400, vertex_label = T, edge_label = T, allowed_voltage = .03){
   
-  require(igraph)
   #grid = grid_overloaded
   #grid = grid_solved
 
@@ -14,7 +25,7 @@ plot_grid_rein = function(grid, U_set = 400, vertex_label = T, edge_label = T, a
   grid_data = merge(grid_data,transm_ratio , by.x = "end", by.y = "row.names")
   
   #add flowing currents
-  currents = melt(grid$current, value.name = 'I_a')
+  currents <- reshape2::melt(grid$current, value.name = 'I_a')
   grid_data <-  merge(grid_data, currents,
                       by.x = c("begin", "end"), by.y = c("Var1", "Var2"))
   grid_data$I_a <- grid_data$I_a/grid_data$transmissio_ratio

@@ -1,27 +1,15 @@
 ################################################################################
-#  Description:
-#'  function that runs all necessary functions for newbuildin or rebuilding a SimTOOL grid. 
-# 
-#' @title         wrapper.prepare.grid
-#' 
-#                 name         type                   description  
-#' @param  \strong{grid}       'SimTOOL grid structure
-#' @param  \strong{line_types} ' dataframe containing specific line types
-#' @param  \strong{trafo_types} ' dataframe containing specific trafo types
-#' 
-#' @return  grid that has included all previously done changes
-# @seealso
-#' @author        Wolfgang Biener             wolfgang.biener(at)ise.fraunhofer.de
+#' @title wrapper.prepare.grid
+#' @description  runs all necessary functions for preparing and execute loa flow calculation from SimTOOL. 
+#' @param grid  List containing information of grid to be optimized.
+#' @param check  logical, to check if the structure of the grid allows optimization
+#' @param U_set   Grid's lower voltage level 
+#' @param oltc.trigger   indication for OLTC transformator usage.
+#' @param verbose   Verbosity level. value greater than zero to display step by step of reinforcement
+#' @return grid after load flow calculation
 ################################################################################
 
-
-wrapper.prepare.grid <- function(grid, check = F, solution_space_combined = NULL, U_set = NULL, oltc.trigger = F, verbose = 0){
-  source('~/Documents/simtool/simtool/SimTOOL/R/solve.LF.R')
-  #setwd('~/Documents/rein_lp/rein/')
-  source('R/convert.lines.R')
-  source('R/replace_trafo_types.R')
-  source('R/replace_line_types.R')
-  source('R/check_reinforcement.R')
+wrapper.prepare.grid <- function(grid, check = F, U_set = NULL, oltc.trigger = F, verbose = 0){
 
   # setting some probleme cases to NULL 
   grid$current <- NULL
@@ -86,6 +74,7 @@ wrapper.prepare.grid <- function(grid, check = F, solution_space_combined = NULL
     grid$ctr[[1]]$U_min <- U_set*(1 - 0.08)
     grid$ctr[[1]]$U_max <- U_set*(1 + 0.08)
     grid$ctr[[1]]$verbose <- 2
+    
     grid <- solve.LF(grid = grid, meth = "G", ctr = c("OLTC"), warm = F, verbose = 0)
   }
   

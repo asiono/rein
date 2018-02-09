@@ -1,21 +1,9 @@
 ################################################################################
-# Description:
-#'Fucntion to find the leave nodes of a grid. It searches the nodes having only
-#' one connection.
-#'
-#' @title         find_leaves
-#' 
-#                   name                           description  
-#' @param  \strong{lines}            'lines_data frame of package SimTOOL
-#' @param  \strong{slack = 'GRID'}   'Slack node of the grid.
-#' 
-#' 
-#' @return 
-#' Names of leave nodes of the grid. 
-#' @details 
-#' the slack node is erased from the leaves
-#'@keywords paths grid_paths
-#'@author        Gunther Gust             gunther.gust(at)is.uni-freiburg.de
+#' @title find_leaves
+#' @description find the leaf node(s) and remove slack node of a grid. It searches the nodes having only one connection.
+#' @param lines lines_data frame of package SimTOOL
+#' @param slack Slack node of the grid.
+#' @return Names of leave nodes of the grid.
 ################################################################################
 
 find_leaves <- function(lines, slack = 'GRID'){

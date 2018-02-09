@@ -1,23 +1,10 @@
-###############################################################################
-#############################################   convert.lines  ################
-###############################################################################
-# prepares lines and trafos for loadflow analysis
-# needs lines, Vref(phase - phase), frequency
-# out: converted lines
-# out: transm_ratio
-# adding to list
-# 3.4.2012 (BWH): added variable transmission ratio for low voltage side of transformer, this will not be used for calculating the transformer parameter.
-# 4.9.2012 (BWH): in some cases w_os_real has length longer than 1, so take first element (detecting transmission ratio)
-# 17.5.2013 (KDZ): Update type of slack node
-
-##DEBUG: Where is function check.version()
-##grid <- check.version(grid) 
-
-### replacing line and trafo types for further claculation
-#   if(!exists(x ='line_types'))  data(types)
-#   grid <- replace_line_types(grid, verbose = 0)
-#   grid <- replace_trafo_types(grid, verbose = 0)
-
+###############################################################################################
+#' @title   check.lines
+#' @description prepares lines and trafos for load flow calculation
+#' @param grid  List containing information of grid to be optimized.
+#' @param verbose   Verbosity level. value greater than zero to display step by step of reinforcement
+#' @return grid data with transmission ratio and converted lines
+###############################################################################################
 
 convert.lines <- function(grid, verbose = 1) {
   
@@ -25,9 +12,9 @@ convert.lines <- function(grid, verbose = 1) {
   
   ##################### setting variables for further calculations##############################
   
-  if (is.null(grid$lines$trafo_Sn)) grid$lines <- transform.generic(grid$lines)
+  if (is.null(grid$lines$trafo_Sn)) grid$lines <- replace_trafo_types(grid$lines)
 
-  grid <- input.check.convert.lines(grid)
+  grid <- input.check.convert.lines(grid, verbose)
   
   lines <- grid$lines
   Vref <- grid$Vref
@@ -47,7 +34,7 @@ convert.lines <- function(grid, verbose = 1) {
 
   lines <- convert.trafos(lines,Vref,verbose)
   
-  transm_ratio <- create.transmission.ratio(Vref,Nref,cal_node, node_parameter,lines)
+  transm_ratio <- create.transmission.ratio(Vref, Nref, cal_node, lines)
   
   grid <- convert.lines.switches(grid, verbose)
   
@@ -127,7 +114,7 @@ create.maxI <- function(lines, Nref, cal_node, verbose){
 }
 
 
-input.check.convert.lines <- function(grid){
+input.check.convert.lines <- function(grid, verbose = 1){
   
 
   if (is.null(grid$lines)) stop("convert.lines: list 'grid' does not contain lines --> stop") 
@@ -153,10 +140,10 @@ input.check.convert.lines <- function(grid){
   if (is.null(grid$cal_node) ) {
     if (verbose > 0) message(sprintf("convert.lines: list 'grid' does not define
                                  cal_node: will be defined, slack set to
-                                 grid$Nref:'%s'", Nref)) 
+                                 grid$Nref:'%s'", grid$Nref)) 
     
     # constructing calculations from grid$power$name ::: problem with switch nodes
-    cal_node <- as.character(grid$power$name)[which(as.character(grid$power$name) != Nref)]
+    cal_node <- as.character(grid$power$name)[which(as.character(grid$power$name) != grid$Nref)]
     grid$cal_node <- cal_node
     #update type
     grid$power[which(grid$power$name == grid$Nref),"type"] <- "Slack"
@@ -165,7 +152,7 @@ input.check.convert.lines <- function(grid){
   return(grid)
 }
 
-create.transmission.ratio <- function(Vref,Nref,cal_node, node_parameter,lines){
+create.transmission.ratio <- function(Vref,Nref,cal_node, lines){
   
   nodes_names <- c(Nref,cal_node)
   lines_without_trafo <- lines[grep('trafo',lines$type, invert = T), ]
@@ -188,8 +175,8 @@ create.transmission.ratio <- function(Vref,Nref,cal_node, node_parameter,lines){
   w_us <- U_2str/Vref/sqrt(3)
   
   for (n in trafo_places) {
-    connected_os <- search_connected_points(lines_without_trafo,lines$begin[n])
-    connected_us <- search_connected_points(lines_without_trafo,lines$end[n])
+    connected_os <- SimTOOL::search_connected_points(lines_without_trafo,lines$begin[n])
+    connected_us <- SimTOOL::search_connected_points(lines_without_trafo,lines$end[n])
     # by the first transformer connected is empty. For the first one the condition is always true. 
 
     if ((lines$begin[n] %in% connected) == FALSE) {
