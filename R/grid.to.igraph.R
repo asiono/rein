@@ -13,8 +13,7 @@
 ################################################################################
 
 grid.to.igraph <- function(lines, directed = F) {
-  relations <- data.frame(begin = lines$begin, end = lines$end, ncol = 2)
-  graph <- graph.data.frame(relations, directed = directed)
+  graph <- graph.data.frame(lines[,c("begin","end")], directed = directed)
   graph <- igraph.line.lengths(graph, lines)
   return(graph)
 }

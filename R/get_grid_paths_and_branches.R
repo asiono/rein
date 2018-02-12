@@ -9,12 +9,8 @@
 ################################################################################
 
 get_grid_paths_and_branches <- function(lines, slack_node = "GRID") {
- browser()
   #generate igraph object
-  #graph <- grid.to.igraph(lines, directed = T)
-  graph = graph.data.frame(lines, directed = T)
-  #debug
-  graph = graph.data.frame(lines, directed = F)
+  graph = graph.data.frame(lines[,c("begin","end")], directed = F)
 
   #determine root node (transformer)
   root_node <- lines$begin[grep(lines$trafo, pattern = "trafo")]

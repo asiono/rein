@@ -16,9 +16,9 @@ check_reinforcement <- function(lines, line_types = NA, trafo_types = NA){
     }
   
   # preparing igraph
-  graph <- igraph::graph.data.frame(grid$lines, directed = F)
+  graph <- igraph::graph.data.frame(lines[,c("begin","end")], directed = F)
   #check islands 
-  if (nrow(grid$lines[which(!grid$lines$begin %in% grid$lines$end), ]) > 1) stop('There is islanding in the grid')
+  if (!is.connected(graph)) stop('There is islanding in the grid')
   # check if grid still has a double line 
   if (any(igraph::is.loop(graph))) stop('The grid has double line')    
   # check if grid is radial  
