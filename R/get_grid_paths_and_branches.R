@@ -3,12 +3,13 @@
 #' @description   For each line the corresponding path in the grid is determined. It is based on
 #' a shortest paths analysis from each end node of the grid to the low-voltage side of the transformer.  
 #' @param lines lines_data frame of package SimTOOL
+#' @param slack_node reference node that has has angular reference of 0 and voltage magnitude of 1 p.u. 
 #' @return Output is a dataframe. Rows contain the lines. For each path a column indicates whether 
 #' the corresponding line is contained (1) or not (0).
 ################################################################################
 
-get_grid_paths_and_branches <- function(lines) {
-
+get_grid_paths_and_branches <- function(lines, slack_node = "GRID") {
+ browser()
   #generate igraph object
   #graph <- grid.to.igraph(lines, directed = T)
   graph = graph.data.frame(lines, directed = T)
@@ -21,7 +22,7 @@ get_grid_paths_and_branches <- function(lines) {
   edges_df = get.data.frame(graph)  
   edges_df = edges_df[,c(1,2)]
   
-  feeder_ends <- find_leaves(lines = lines)
+  feeder_ends <- find_leaves(lines = lines, slack = slack_node)
   
   #for each path from the root node to an end note the lines contained are determined
   for (feeder_nb in 1:length(feeder_ends)) {

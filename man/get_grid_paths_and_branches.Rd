@@ -4,10 +4,12 @@
 \alias{get_grid_paths_and_branches}
 \title{get_grid_paths}
 \usage{
-get_grid_paths_and_branches(lines)
+get_grid_paths_and_branches(lines, slack_node = "GRID")
 }
 \arguments{
 \item{lines}{lines_data frame of package SimTOOL}
+
+\item{slack_node}{reference node that has has angular reference of 0 and voltage magnitude of 1 p.u.}
 }
 \value{
 Output is a dataframe. Rows contain the lines. For each path a column indicates whether 

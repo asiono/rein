@@ -11,11 +11,10 @@
 ################################################################################
 
 build_solution_space_P <- function(grid, expansion_alternatives, verbose = 0){
-
-  grid_paths = get_grid_paths_and_branches(grid$lines)
+  grid_paths <- get_grid_paths_and_branches(grid$lines, slack_node = grid$Nref)
   
   #build parallel lines
-  build_parallel_lines <- find_parallel_lines_update(grid$lines)
+  build_parallel_lines <- find_parallel_lines_update(grid$lines, slack_node = grid$Nref)
   
   #get all assets of type i of the grid
   grid_assets <- create_grid_assets(grid, type = 'line')

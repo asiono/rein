@@ -13,10 +13,6 @@
 ################################################################################
 
 plot_grid_rein = function(grid, U_set = 400, vertex_label = T, edge_label = T, allowed_voltage = .03){
-  
-  #grid = grid_overloaded
-  #grid = grid_solved
-
   grid_data = grid$lines
   
   # add transmission ratio to the lines
@@ -45,8 +41,8 @@ plot_grid_rein = function(grid, U_set = 400, vertex_label = T, edge_label = T, a
   V(grid_graph)$Mod_U = Mod(V(grid_graph)$U[ord])
   #Voltage in p.u. 
   #modified for oltc because grid$U_res/trafo_U2 and grid$U/grid$Vref*sqrt(3) in OLTC are different
-  V(grid_graph)$u <- c(V(grid_graph)$Mod_U[which(names(V(grid_graph)) == "GRID")]/grid$Vref, 
-                       V(grid_graph)$Mod_U[which(names(V(grid_graph)) != "GRID")]/U_set)
+  V(grid_graph)$u <- c(V(grid_graph)$Mod_U[which(names(V(grid_graph)) == grid$Nref)]/grid$Vref, 
+                       V(grid_graph)$Mod_U[which(names(V(grid_graph)) != grid$Nref)]/U_set)
   
   #Loads
   V(grid_graph)$S <- as.complex(NA)

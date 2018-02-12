@@ -9,9 +9,8 @@
 #' @return Output is a dataframe containing possible cable types for each lines in the grid with its specifications
 #################################################################################
 
-build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0){
-
-  grid_paths <- get_grid_paths_and_branches(grid$lines)
+build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0) {
+  grid_paths <- get_grid_paths_and_branches(grid$lines, slack_node = grid$Nref)
   #get all assets of type i of the grid
   grid_assets <- create_grid_assets(grid, type = 'line')
 
@@ -20,7 +19,7 @@ build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0){
   transm_ratio_assets <- unique(transm_ratio_assets)
   
   #build parallel lines
-  build_parallel_lines <- find_parallel_lines_update(grid$lines)
+  build_parallel_lines <- find_parallel_lines_update(grid$lines, slack_node = grid$Nref)
   
   parallel_lines_data <- build_parallel_lines$parallel_lines      
   

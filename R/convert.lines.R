@@ -133,8 +133,8 @@ input.check.convert.lines <- function(grid, verbose = 1){
   }
   
   if (is.null(grid$Nref)) {
-    stop("convert.lines: list 'grid' does not contain a slack node") 
-    grid$Nref <- "GRID"
+    warning("convert.lines: list 'grid' does not contain a slack node") 
+    grid$Nref <- grid$power[grepl("slack", grid$power$type, ignore.case = T), "name"]
   }
 
   if (is.null(grid$cal_node) ) {

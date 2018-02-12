@@ -4,6 +4,7 @@
 #' Starting point for all parallel lines is the busbar at the transformer. 
 #' Possible end points are all nodes except leaf nodes.   
 #' @param lines   lines_data frame of package SimTOOL
+#' @param slack_node reference node that has has angular reference of 0 and voltage magnitude of 1 p.u. 
 #' @return dataframe with possible begin and end nodes of parallel lines together with the line length. 
 ################################################################################
 
@@ -11,7 +12,7 @@
 #todo : spannungsabfall ueber letzten Stueck bleibt gleich
 #todo: strom durch alten leitungen verringert sich um den der durch das stueck geht. 
 
-find_parallel_lines_update <- function(lines){
+find_parallel_lines_update <- function(lines, slack_node) {
   graph <- grid.to.igraph(lines, directed = T)
   
   #Get root node (todo: What if a grid has multiple transformers / Sammelschienen?)
@@ -28,7 +29,7 @@ find_parallel_lines_update <- function(lines){
   colnames(parallel_lines) <- c("begin", "end","Edge_count", "length_km")
   
   #remove loops and line parallel to the transformer
-  parallel_lines <- parallel_lines[(parallel_lines$Edge_count > 0) & (parallel_lines$end != "GRID") ,] 
+  parallel_lines <- parallel_lines[(parallel_lines$Edge_count > 0) & (parallel_lines$end != slack_node) ,] 
   
   #remove parallel lines that are connected to a leaf node (degree = 1)
   degree = data.frame(degree(graph))
