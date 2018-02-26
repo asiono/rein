@@ -15,7 +15,7 @@ build_solution_space_T <- function(grid, expansion_alternatives, verbose = 0){
   grid_assets <- create_grid_assets(grid, type = 'trafo')
   
   ### create solution space for transformer
-  if (is.null(grid_assets$comment) || grid_assets$comment == '') {
+  if (is.null(grid_assets$comment) || is.na(grid_assets$comment)) {
     grid_assets$comment <- grid_assets$model
   }
   grid_assets$model = NULL

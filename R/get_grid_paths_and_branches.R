@@ -13,12 +13,11 @@ get_grid_paths_and_branches <- function(lines, slack_node = "GRID") {
   graph = graph.data.frame(lines[,c("begin","end")], directed = F)
 
   #determine root node (transformer)
-  root_node <- lines$begin[grep(lines$trafo, pattern = "trafo")]
+  root_node <- lines$begin[grep(lines$type, pattern = "trafo")]
   #create the output data frame
   edges_df = get.data.frame(graph)  
   edges_df = edges_df[,c(1,2)]
-  
-  feeder_ends <- find_leaves(lines = lines, slack = slack_node)
+    feeder_ends <- find_leaves(lines = lines, slack = slack_node)
   
   #for each path from the root node to an end note the lines contained are determined
   for (feeder_nb in 1:length(feeder_ends)) {

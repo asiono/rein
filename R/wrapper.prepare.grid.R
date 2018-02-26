@@ -7,6 +7,7 @@
 #' @param oltc.trigger   indication for OLTC transformator usage.
 #' @param verbose   Verbosity level. value greater than zero to display step by step of reinforcement
 #' @return grid after load flow calculation
+#' @export
 ################################################################################
 
 wrapper.prepare.grid <- function(grid, check = F, U_set = NULL, oltc.trigger = F, verbose = 0){

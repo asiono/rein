@@ -18,5 +18,4 @@ Imports: plyr,
     igraph,
     slam,
     data.table,
-    lpSolve,
-    reshape2
+    reshape2, Rglpk

@@ -6,7 +6,7 @@
 \usage{
 reinforcement(grid, reinforcement_method, avail_asset_types = list(line =
   c("NAYY4x150", "2xNAYY4x240", "2xNAYY4x150", "4xNAYY4x240"), trafo =
-  c("DOTEL_630")), verbose = 0)
+  c("DOTEL_630", "DOTEL_1000")), verbose = 0)
 }
 \arguments{
 \item{grid}{List containing initial grid data.}

@@ -16,8 +16,7 @@
 
 reinforcement <- function(grid, reinforcement_method, 
                           avail_asset_types = list(line = c("NAYY4x150", "2xNAYY4x240", "2xNAYY4x150", "4xNAYY4x240"), 
-                                                   trafo = c("DOTEL_630")), verbose = 0) {
-
+                                                   trafo = c("DOTEL_630", "DOTEL_1000")), verbose = 0) {
 starttime <- Sys.time()
 
 # 1. Loading neccesarry datas
@@ -46,7 +45,7 @@ starttime <- Sys.time()
       cost <- 0                #cost is reset to 0
       grid_solved <- grid     #reinforced grid is called grid_solved and original grid is grid
       oltc.trigger <- F       #trigger when OLTC transformer is apllied
-      iteration_limit <- 9    
+      iteration_limit <- 3    
       #because OLTC will change tranformer's ratio, initial ratio is stored
       U_set <- grid$lines[which(grid$lines$type == 'trafo'), "trafo_U2"]
       repeat {
@@ -72,12 +71,12 @@ starttime <- Sys.time()
 
 # 3. Displaying the optimization result
     # Plot grid before and after reinforcement
-      plot_grid_rein(grid, U_set = U_set)
-      plot_grid_rein(grid_solved, U_set = U_set)
+      #plot_grid_rein(grid, U_set = U_set)
+      #plot_grid_rein(grid_solved, U_set = U_set)
     # Calculate optimization time
       endtime <- Sys.time()
       totaltime <- round(difftime(endtime, starttime, units = "secs"), digits = 2)
       message("Grid reinforcement optimization were done within ", totaltime, " seconds")
-
+      return(grid_solved)
 }
 

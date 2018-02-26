@@ -27,5 +27,5 @@ grid$S_cal[11] <- 7000*0.6
 grid$S_cal[12] <- 7000*1.54
 grid$S_cal[13] <- 7000*0.5
 
-rein::reinforcement(grid, reinforcement_method = 'conventional', avail_asset_types = list(line = c("2xNAYY4x150", "2xNAYY4x240"), 
-                                                                                  trafo = c("DOTEL_630")), verbose = 0)
+rein::reinforcement(grid, reinforcement_method = 'rpc', avail_asset_types = list(line = c("NAYY4x150", "2xNAYY4x150", "2xNAYY4x240", "4xNAYY4x240"), 
+                                                                                  trafo = c("DOTEL_2000","DOTEL_1600")), verbose = 0)

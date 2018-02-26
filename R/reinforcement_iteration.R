@@ -8,7 +8,7 @@
 #' @param iteration_count      counter for reinforcement iteration.
 #' @param oltc.trigger         indication for OLTC transformator usage.
 #' @return grid_solved
-#' @importFrom lpSolve lp
+#' @importFrom Rglpk Rglpk_solve_LP
 ################################################################################
 
 reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iteration_count, oltc.trigger) {
@@ -37,9 +37,8 @@ reinforcement_iteration <- function(grid, method, avail_asset_types, U_set, iter
   kappa(matrices$A)
 
   #run optimization with linear and integer programming
-  result_lp <- lp("min", objective.in = matrices$cost,
-                   const.mat = matrices$A, const.dir =  matrices$const.dir,
-                   const.rhs = matrices$b, all.bin = T)
+  result_lp <- Rglpk_solve_LP(obj = matrices$cost, mat = matrices$A, dir = matrices$const.dir, rhs = matrices$b, types = "B")
+  #result_lp <- lp("min", objective.in = matrices$cost, const.mat = matrices$A, const.dir =  matrices$const.dir, const.rhs = matrices$b, all.bin = T)
   if (!any(as.logical(result_lp$solution))) stop("There is no possible solution found. 
                                                  Try to provide more available_asset_type with higher specification")
 
