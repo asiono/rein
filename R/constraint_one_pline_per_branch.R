@@ -1,22 +1,11 @@
 ################################################################################
-# Description:
-#' This function creates conditions to ensure that only one parallel lines 
-#' is chosen per branch of the grid 
-#'
 #' @title         constraint_one_pline_per_branch
-#' 
-#                   name         type                   description  
-#' @param  \strong{solution_space}       'data frame containing information for 
-#' possible expansion alternatives. 
-#' @param  \strong{verbose}    'verbosity level 
-
-# #@details 
-#' 
-#' @return 
-#' This function creates the side conditions and objective function for the optimization problem. 
+#' @description   This function creates conditions to ensure that only one parallel lines 
+#' is chosen per branch of the grid 
+#' @param solution_space   dataframe containing possible cable types in the grid and its specifications
+#' @param verbose   Value greater than zero to display step by step of reinforcement
+#' @return   This function creates the side conditions and objective function for the optimization problem. 
 #' The ouput is a list. That contains A, b and const.dir. 
-#'@keywords optimization , solution space
-#'@author        Wolfgang Biener         wolfgang.biener(at)ise.fraunhofer.de
 #################################################################################
 
 constraint_one_pline_per_branch <- function(solution_space, verbose = 0){

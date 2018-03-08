@@ -1,31 +1,20 @@
 ################################################################################
-# Description:
-#'the function creates the solutions space for which the grid expansion      
-#'
-#' @title         build_solution_space
+#' @title         build_solution_space_P
+#' @description   Function to create possible solution for grid reinforcement on parallel lines
 #' 
-#                   name         type                   description  
-#' @param  \strong{grid}       'SimTOOL container of grid data
-#' @param  \strong{types}      'character vector specifying which assets to 
-#'                             consider.  trafo and line are possible
-#' @param  \strong{verbose}    'verbosity level 
-
-#' @details 
-#' \strong{type} is a    
-#' @return 
-#' Output is a dataframe. Rows contain the lines, the expansion alternatives for 
-#' the lines and the voltage drop for the expansion alternatives. 
-#'@keywords paths grid_paths, solution space
-#'@author        Wolfgang Biener             wolfgang.biener(at)ise.fraunhofer.de
+#' @param grid   List containing initial grid data.
+#' @param expansion_alternatives   data frame containing available grid assets for either line or transformator reinforcement
+#' @param verbose   Value greater than zero to display step by step of reinforcement
+#' 
+#' @return Output is a dataframe containing possible cable types for each possible 
+#' parallel lines in the grid with its specifications
 ################################################################################
 
-
 build_solution_space_P <- function(grid, expansion_alternatives, verbose = 0){
-  source('R/find_parallel_lines_update.R')
-  grid_paths = get_grid_paths_and_branches(grid$lines)
+  grid_paths <- get_grid_paths_and_branches(grid$lines, slack_node = grid$Nref)
   
   #build parallel lines
-  build_parallel_lines <- find_parallel_lines_update(grid$lines)
+  build_parallel_lines <- find_parallel_lines_update(grid$lines, slack_node = grid$Nref)
   
   #get all assets of type i of the grid
   grid_assets <- create_grid_assets(grid, type = 'line')
@@ -40,7 +29,7 @@ build_solution_space_P <- function(grid, expansion_alternatives, verbose = 0){
   # to do: this is not robust aiganst a change of begin and end of lines ...
   #(which is the current of the subsequent lines starting at the end node of the parallel line)
   #Sum up current of edges leaving each node
-  current_parallel = ddply(grid_assets, "begin", summarize, I_b = sum(I_b)) 
+  current_parallel = plyr::ddply(grid_assets, "begin", summarize, I_b = sum(I_b)) 
   #Merging the dataframes 
   parallel_lines_data = merge(parallel_lines_data, current_parallel, 
                               by.x = "end", by.y = "begin", sort = F)

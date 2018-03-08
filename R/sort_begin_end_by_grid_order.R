@@ -1,21 +1,10 @@
-
 ################################################################################
-# Description:
-#' It reorders the beginning and the end just as it is in the original lines object
-#'
-#' @title         sort_begin_end_by_grid_order
-#' 
-#                   name         type                   description  
-#' @param  \strong{lines}       'lines_data frame of package SimTOOL
-#' @param  \strong{data_frame}  'dataframe having begin and end as cols like 
-#' grid$lines
-#' @param  \strong{cols}  'character vector giving the corresponding names of 'begin' and 'end'. c('begin', 'and) is the custom values
-#' 
-#' 
-#' @return 
-#' this function orders the begin and end points just as it is in grid$lines
-#'@keywords paths grid_paths
-#'@author       Wolfgang Biener       wolfgang.biener(at)ise.fraunhofer.de
+#' @title sort_begin_end_by_grid_order
+#' @description  reorders the beginning and the end just as it is in the original lines object
+#' @param lines  data frame from grid data containing grid assets and its parameters
+#' @param data_frame  dataframe having begin and end as cols like grid$lines
+#' @param cols character vector giving the corresponding names of 'begin' and 'end'. c('begin', 'and) is the custom values
+#' @return this function orders the begin and end points just as it is in grid$lines
 ################################################################################
 
 sort_begin_end_by_grid_order <- function(lines, data_frame, cols = c('begin','end')){

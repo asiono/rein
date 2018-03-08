@@ -1,23 +1,10 @@
-###############################################################################
-#############################################   convert.lines  ################
-###############################################################################
-# prepares lines and trafos for loadflow analysis
-# needs lines, Vref(phase - phase), frequency
-# out: converted lines
-# out: transm_ratio
-# adding to list
-# 3.4.2012 (BWH): added variable transmission ratio for low voltage side of transformer, this will not be used for calculating the transformer parameter.
-# 4.9.2012 (BWH): in some cases w_os_real has length longer than 1, so take first element (detecting transmission ratio)
-# 17.5.2013 (KDZ): Update type of slack node
-
-##DEBUG: Where is function check.version()
-##grid <- check.version(grid) 
-
-### replacing line and trafo types for further claculation
-#   if(!exists(x ='line_types'))  data(types)
-#   grid <- replace_line_types(grid, verbose = 0)
-#   grid <- replace_trafo_types(grid, verbose = 0)
-
+###############################################################################################
+#' @title   check.lines
+#' @description prepares lines and trafos for load flow calculation
+#' @param grid  List containing information of grid to be optimized.
+#' @param verbose   Verbosity level. value greater than zero to display step by step of reinforcement
+#' @return grid data with transmission ratio and converted lines
+###############################################################################################
 
 convert.lines <- function(grid, verbose = 1) {
   
@@ -25,9 +12,9 @@ convert.lines <- function(grid, verbose = 1) {
   
   ##################### setting variables for further calculations##############################
   
-  if (is.null(grid$lines$trafo_Sn)) grid$lines <- transform.generic(grid$lines)
+  if (is.null(grid$lines$trafo_Sn)) grid$lines <- replace_trafo_types(grid$lines)
 
-  grid <- input.check.convert.lines(grid)
+  grid <- input.check.convert.lines(grid, verbose)
   
   lines <- grid$lines
   Vref <- grid$Vref
@@ -35,21 +22,19 @@ convert.lines <- function(grid, verbose = 1) {
   frequency <- grid$frequency
   cal_node <- grid$cal_node
   
-  
   # setting lines parameters and assuring the right format
   lines$begin <- as.character(lines$begin)
   lines$end <- as.character(lines$end)
-  lines$element <- as.character(lines$element)
   lines$seriel <- NA
   lines$parallel <- NA
   lines$element_map <- ""
-
+  
   if (verbose >= 2) print(summary(lines))
   if (verbose >= 2) print(sprintf("Vref: %f V", Vref))
 
   lines <- convert.trafos(lines,Vref,verbose)
   
-  transm_ratio <- create.transmission.ratio(Vref,Nref,cal_node, node_parameter,lines)
+  transm_ratio <- create.transmission.ratio(Vref, Nref, cal_node, lines)
   
   grid <- convert.lines.switches(grid, verbose)
   
@@ -97,7 +82,7 @@ create.maxI <- function(lines, Nref, cal_node, verbose){
 
     for (i in 1:length(lines$begin)) {
      
-      if (length(unlist(strsplit(lines$element[i], ","))) == 8) {
+      if (lines$type[i] == 'trafo') {
         # assumption maximal current is always for the voltage at the high voltage side.  
         n_os <- lines$trafo_U1[i]
         n_us <- lines$trafo_U2[i]
@@ -107,7 +92,6 @@ create.maxI <- function(lines, Nref, cal_node, verbose){
         # of the transformer. the problem is that there is only one max current given, 
         # where there a in reality two at each side of the transformer
 
-        power_calc_os  <- n_os * lines$max_I[i] * sqrt(3)/1000        
         power_calc_us  <- n_us * lines$max_I[i] * sqrt(3)/1000
         if (power_calc_us > 0.9*power_trafo && power_calc_us < 1.1*power_trafo) {
           line_max_I_os <- lines$max_I[i]*n_us/n_os
@@ -130,7 +114,7 @@ create.maxI <- function(lines, Nref, cal_node, verbose){
 }
 
 
-input.check.convert.lines <- function(grid){
+input.check.convert.lines <- function(grid, verbose = 1){
   
 
   if (is.null(grid$lines)) stop("convert.lines: list 'grid' does not contain lines --> stop") 
@@ -149,17 +133,17 @@ input.check.convert.lines <- function(grid){
   }
   
   if (is.null(grid$Nref)) {
-    stop("convert.lines: list 'grid' does not contain a slack node") 
-    grid$Nref <- "GRID"
+    warning("convert.lines: list 'grid' does not contain a slack node") 
+    grid$Nref <- grid$power[grepl("slack", grid$power$type, ignore.case = T), "name"]
   }
 
   if (is.null(grid$cal_node) ) {
     if (verbose > 0) message(sprintf("convert.lines: list 'grid' does not define
                                  cal_node: will be defined, slack set to
-                                 grid$Nref:'%s'", Nref)) 
+                                 grid$Nref:'%s'", grid$Nref)) 
     
     # constructing calculations from grid$power$name ::: problem with switch nodes
-    cal_node <- as.character(grid$power$name)[which(as.character(grid$power$name) != Nref)]
+    cal_node <- as.character(grid$power$name)[which(as.character(grid$power$name) != grid$Nref)]
     grid$cal_node <- cal_node
     #update type
     grid$power[which(grid$power$name == grid$Nref),"type"] <- "Slack"
@@ -168,19 +152,17 @@ input.check.convert.lines <- function(grid){
   return(grid)
 }
 
-create.transmission.ratio <- function(Vref,Nref,cal_node, node_parameter,lines){
+create.transmission.ratio <- function(Vref,Nref,cal_node, lines){
   
   nodes_names <- c(Nref,cal_node)
-  lines_without_trafo <- lines[grep('trafo',lines$element, invert = T), ]
+  lines_without_trafo <- lines[grep('trafo',lines$type, invert = T), ]
   
-  
-  trafo_places <- grep('trafo', lines$element)  
+  trafo_places <- grep('trafo', lines$type)  
   
   # setting variables
   connected <- c()
   transm_ratio <- c()
   
-  gr <- lines$trafo_group
   U_1n <- lines$trafo_U1
   U_2n <- lines$trafo_U2
   ### Transformation Ratio ###
@@ -193,8 +175,8 @@ create.transmission.ratio <- function(Vref,Nref,cal_node, node_parameter,lines){
   w_us <- U_2str/Vref/sqrt(3)
   
   for (n in trafo_places) {
-    connected_os <- search_connected_points(lines_without_trafo,lines$begin[n])
-    connected_us <- search_connected_points(lines_without_trafo,lines$end[n])
+    connected_os <- SimTOOL::search_connected_points(lines_without_trafo,lines$begin[n])
+    connected_us <- SimTOOL::search_connected_points(lines_without_trafo,lines$end[n])
     # by the first transformer connected is empty. For the first one the condition is always true. 
 
     if ((lines$begin[n] %in% connected) == FALSE) {
@@ -236,7 +218,7 @@ create.transmission.ratio <- function(Vref,Nref,cal_node, node_parameter,lines){
 
 convert.lines.lines <- function(lines, transm_ratio,frequency,verbose){
   if (verbose >= 1) message("###    CALCULATE LINE PARAMETERS")
-  lines_places <- grep('line', lines$element)
+  lines_places <- grep('line', lines$type)
   R <- lines$line_R[lines_places]
   L <- lines$line_L[lines_places]
   G <- lines$line_G[lines_places]
@@ -244,6 +226,7 @@ convert.lines.lines <- function(lines, transm_ratio,frequency,verbose){
   l <- lines$line_l[lines_places]
 
   transm_ratio_line <- transm_ratio[lines$begin[lines_places]]
+  
   lines$seriel[lines_places] <-  1/(R*l + (L/1000*2*pi*frequency*l)*1i)*transm_ratio_line^2
   lines$parallel[lines_places] <- (G/1000000/2*l + 1i*2*pi*frequency*C/1000000000/2*l)*transm_ratio_line^2
   lines$element_map[lines_places] <- "line"
@@ -254,7 +237,7 @@ convert.lines.lines <- function(lines, transm_ratio,frequency,verbose){
 
 convert.lines.switches <- function(grid, verbose){
   if (verbose >= 1) message("###    REPLACE SWITCHES")
-  places <- grep('switch', grid$lines$element)
+  places <- grep('switch', grid$lines$type)
   
   for (n in places) {
     state <- as.numeric(substring(grid$lines$element[n],8 , 8))
@@ -276,23 +259,18 @@ convert.lines.switches <- function(grid, verbose){
 
 convert.trafos <- function(lines, Vref, verbose){
   
-  trafo_places <- grep('trafo', lines$element)
+  trafo_places <- grep('trafo', lines$type)
   
   # allocating variables for further calculation, could be done easier if variables were net converted into a string before 
   S_n <- lines$trafo_Sn
-  gr <- lines$trafo_group
   u_k <- lines$trafo_uk
   P_cu <- lines$trafo_Pcu
   i_0 <- lines$trafo_i0
-  P_fe <- lines$trafo_Pfe
   U_1n <- lines$trafo_U1
-  U_2n <- lines$trafo_U2
-  
+
   #calculating normal current for further calculation
   I_1n <- S_n*1000/(sqrt(3)*U_1n)
-  I_1n <- S_n*1000/(sqrt(3)*U_1n)
-  I_2n <- S_n*1000/(sqrt(3)*U_2n)
-  
+
   # if that is all ok from a normalizing point of view?
   I_ref <- I_1n * U_1n/Vref
   
@@ -310,7 +288,6 @@ convert.trafos <- function(lines, Vref, verbose){
 
   ########### parallel element
   # old version 
-  R_fe <- Vref^2/(P_fe*1000)
 
   Z_m <- (Vref/(sqrt(3) * i_0) * I_1n)# problem, dass immer V_ref benützt wird und ein festes I_1n. Somit wird der widerstand nicht richtig transformiert.
 

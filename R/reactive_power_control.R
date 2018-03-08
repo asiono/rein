@@ -1,29 +1,18 @@
 ################################################################################
-# Description:
-#' this function change feed-in power based on specific power factor       
-#'
-#' @title         reactive_power_control
-#' 
-#                   name         type                   description  
-#' @param  \strong{lines}      'lines data of the grid 
-#' @param  \strong{S_cal}      'complex vector giving all powers in internal notation for cal_nodes 
-#' @param  \strong{verbose}    'verbosity level 
-
-# #@details 
-#' 
-#' @return 
-#' This function change the value of active and reactive power of the feed-in. 
+#' @title  reactive_power_control
+#' @description change feed-in power based on specific power factor 
+#' @param lines lines data of the grid
+#' @param S_cal omplex vector giving all powers in internal notation for cal_nodes
+#' @param verbose verbosity level
+#' @return This function change the value of active and reactive power of the feed-in. 
 #' The ouput is new complex number of feed-in power. 
-#'@keywords reactive power control, power factor
-#'@author        Wolfgang Biener/Andre Siono         andre.siono(at)ise.fraunhofer.de
 ################################################################################
-
 
 reactive_power_control <- function(lines, S_cal, verbose = 0) {
   
   #calculate node distance from LV side of transformer
-  grid_begin <- grid$lines[which(grid$lines$type == 'trafo'), 'begin']
-  PF_matrix <- cbind(grid$lines[,c(1,2)], line_length = get_line_length(grid$lines$element))
+  grid_begin <- lines[which(lines$type == 'trafo'), 'begin']
+  PF_matrix <- cbind(lines[,c("begin","end")], line_length = get_line_length(lines$element))
 
   for (i in 1:nrow(PF_matrix)) {
     if (PF_matrix$begin[i] != grid_begin) {
@@ -34,10 +23,11 @@ reactive_power_control <- function(lines, S_cal, verbose = 0) {
         break
         }
       }
-    }
-    PF_matrix$line_length[i] <- PF_matrix$line_length[i] - PF_matrix$line_length[1]
+    } else {
+      PF_matrix$line_length[i] <- PF_matrix[which(PF_matrix$begin == grid_begin), "line_length"] }
   }
-  PF_matrix <- cbind(PF_matrix, S_cal)
+  
+  PF_matrix <- merge(PF_matrix, as.data.frame(S_cal), by.x = "end", by.y = 0)
   
   #setting power factor
   #power factor are set based on distance from transformer and load

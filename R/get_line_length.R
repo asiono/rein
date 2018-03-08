@@ -1,23 +1,10 @@
 ################################################################################
-#  Description:
-#'  # this function returns the line length from a lines$element
-
-# 
 #' @title         get_line_length
-#' 
-#                 name         type                   description  
-#' @param  \strong{line_element}       'element entry from line list in SimTOOL.  
-#' 
-#'  
+#' @description   this function returns the line length from a lines$element
+#' @param line_element   element value of line data frame 
+#' @param verbose   Value greater than zero to display step by step of reinforcement
 #' @return  line length in km
-# @seealso
-#\code{\link{replace_line_by_bigger}}, \code{\link{replace_line_by_parallel}}
-#' @author        Wolfgang Biener             wolfgang.biener(at)ise.fraunhofer.de
 ################################################################################
-
-
-############### get line_length  ##############################################
-# returns 
 
 get_line_length <- function(line_element, verbose = 0){
   if (verbose > 0) print('get_line_length_called')

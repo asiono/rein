@@ -1,39 +1,25 @@
 ################################################################################
-# Description:
-#'the function creates the solutions space for which the grid expansion      
-#'
-#' @title         build_solution_space
+#' @title         build_solution_space_A
+#' @description   Function to create possible solution for grid reinforcement on lines
 #' 
-#                   name         type                   description  
-#' @param  \strong{grid}       'SimTOOL container of grid data
-#' @param  \strong{types}      'character vector specifying which assets to 
-#'                             consider.  trafo and line are possible
-#' @param  \strong{verbose}    'verbosity level 
+#' @param grid   List containing initial grid data.
+#' @param expansion_alternatives   data frame containing available grid assets for either line or transformator reinforcement
+#' @param verbose   Value greater than zero to display step by step of reinforcement
+#' 
+#' @return Output is a dataframe containing possible cable types for each lines in the grid with its specifications
+#################################################################################
 
-#' @details 
-#' \strong{type} is a    
-#' @return 
-#' Output is a dataframe. Rows contain the lines, the expansion alternatives for 
-#' the lines and the voltage drop for the expansion alternatives. 
-#'@keywords paths grid_paths, solution space
-#'@author        Wolfgang Biener             wolfgang.biener(at)ise.fraunhofer.de
-################################################################################
-
-
-build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0){
-  
-  grid_paths = get_grid_paths_and_branches(grid$lines)
+build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0) {
+  grid_paths <- get_grid_paths_and_branches(grid$lines, slack_node = grid$Nref)
   #get all assets of type i of the grid
   grid_assets <- create_grid_assets(grid, type = 'line')
 
-  source('R/find_parallel_lines_update.R')
-  
   #add transmission ratio
   transm_ratio_assets <- grid_assets[,c("end", "transmissio_ratio")]
   transm_ratio_assets <- unique(transm_ratio_assets)
   
   #build parallel lines
-  build_parallel_lines <- find_parallel_lines_update(grid$lines)
+  build_parallel_lines <- find_parallel_lines_update(grid$lines, slack_node = grid$Nref)
   
   parallel_lines_data <- build_parallel_lines$parallel_lines      
   
@@ -46,7 +32,7 @@ build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0){
     # to do: this is not robust aiganst a change of begin and end of lines ...
     #(which is the current of the subsequent lines starting at the end node of the parallel line)
     #Sum up current of edges leaving each node
-    current_parallel <- ddply(grid_assets, "begin", summarize, I_b = sum(I_b)) 
+    current_parallel <- plyr::ddply(grid_assets, "begin", summarize, I_b = sum(I_b)) 
     #Merging the dataframes 
     parallel_lines_data <- merge(parallel_lines_data, current_parallel, 
                               by.x = "end", by.y = "begin", sort = F)
@@ -77,9 +63,9 @@ build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0){
   # input : expansion_alternatives , grid_assets, grid,  parallel_lines , parallel_to
 
   #construct solution space for original lines
-  grid_assets$model <- NULL
-  grid_assets$max_I <- NULL
-  solution_space_A <- merge(expansion_alternatives$line, grid_assets ,  by = NULL,sort = F)
+  solution_space_A <- merge(expansion_alternatives$line, 
+                            grid_assets[,!colnames(grid_assets) %in% c("model", "max_I", "cost", "dU")] ,  
+                            by = NULL,sort = F)
   
   #add impedances
   solution_space_A <- calculate_impedances(grid = grid,
@@ -87,7 +73,6 @@ build_solution_space_A <- function(grid, expansion_alternatives, verbose = 0){
                                            type = 'line') 
   
   #calculate voltage drops
-  source('R/calculate_voltage_drop_per_line.R')
   U_A <- calculate_voltage_drop_per_line(
     Vref = grid$Vref, R = solution_space_A$R, X = solution_space_A$X, 
     I = (solution_space_A[,grepl('I_b', colnames(solution_space_A))] * solution_space_A$transmissio_ratio))

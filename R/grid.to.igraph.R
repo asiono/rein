@@ -1,41 +1,26 @@
 ################################################################################
-#  Description:
-#'  function makes an igraph out of grid$lines. as result various functions of the large package "igraph" are applicable. e.g. different plots or shortest path calculations
-# 
 #' @title         grid.to.igraph
-#' 
-#                 name         type                   description  
-#' @param  \strong{lines}       'line_container of SimTOOL 
-#' @param  \strong{directed}    'logical giving if the graph shall be handled as 
-#' F is the default value and signifies undirected. 
-#' 
-#' @details 
-#' 
-#' possible extensions:
-#'  solutions for the different data formats provided by igraph --> additional argument "format"
+#' @description   makes an igraph out of grid$lines. as result various functions of the 
+#' large package "igraph" are applicable. e.g. different plots or shortest path calculations
+#' @param lines   lines_data frame of package SimTOOL
+#' @param directed logical giving if the graph shall be handled as. F is the default value and signifies undirected. 
+#' @details possible extensions:
+#' solutions for the different data formats provided by igraph --> additional argument "format"
 #' printing: new vertice shape for Grid and Trafo nodes (manual page 279+)
 #' use argument layout to generate reproduceable plots (coordinates are recently random)
-
-#'  
 #' @return  igraph graph object
-# @seealso
-#' @author        Benjamin Krug            Benjamin.Krug(at)ise.fraunhofer.de
+#' @importFrom graphics plot par
 ################################################################################
 
-
-
 grid.to.igraph <- function(lines, directed = F) {
-  library(igraph)
-  relations <- data.frame(begin = lines$begin, end = lines$end, ncol = 2)
-  graph <- graph.data.frame(relations, directed = directed)
+  graph <- graph.data.frame(lines[,c("begin","end")], directed = directed)
   graph <- igraph.line.lengths(graph, lines)
   return(graph)
 }
 
 ### set line lengths as edge weights
 igraph.line.lengths <- function(graph,lines) {
-  library(igraph)
-  line_lengths <- get_line_length(lines$element)
+  line_lengths <- lines$line_l
   if (length(E(graph)) != length(line_lengths)) {
     stop("igraph.line.lengths: Number of edges of the graph is unequal 
          to the numer of lines of the grid. Line lengths can't be determined")
@@ -52,8 +37,6 @@ igraph.line.lengths <- function(graph,lines) {
 #################################################################################################
 
 plot.grid.igraph <- function(graph, grid, coords = NA) {
-  library(igraph)
-  #library(png)
   V(graph)$size <- 5
   V(graph)$color <- "black"
   V(graph)$shape <- "circle"
@@ -138,7 +121,7 @@ plot.grid.igraph <- function(graph, grid, coords = NA) {
   V(graph)[gen_load_nodes_no_S]$shape <- "none"
   
   # mark trafo "line"
-  trafo_line <- grep(pattern = "trafo", x = grid$lines$element)
+  trafo_line <- grep(pattern = "trafo", x = grid$lines$type)
   E(graph)[trafo_line]$lty <- 3 # 3=dotted
   E(graph)[trafo_line]$width <- 3
   
@@ -157,7 +140,7 @@ plot.grid.igraph <- function(graph, grid, coords = NA) {
   V(graph)[busbar_nodes]$label.dist <- 5#0.4
 
   # mark size of the lines
-  switch_line_nb <- grep(pattern = "switch", x = grid$lines$element)
+  switch_line_nb <- grep(pattern = "switch", x = grid$lines$type)
   max_max_I <- as.numeric(max(grid$lines$max_I[-c(trafo_line,switch_line_nb)]))
 
   for (i in 1:6) { 
@@ -181,7 +164,7 @@ plot.grid.igraph <- function(graph, grid, coords = NA) {
   E(graph)[switch_line_nb]$color <- "black" #can't be overused(extrem max_I) --> only allowed element with other color
   
   # mark overhead lines
-  if (!exists('line_types') | !exists('trafo_types')) data(types)
+  if (!exists('line_types') | !exists('trafo_types')) lazyLoad('types')
   overhead_line_types <- line_types$type[line_types$code == "OL1"]
   overhead_line_numbers <- which(grid$lines$model %in% overhead_line_types) # remember! line and edge numbers are identical
   E(graph)[overhead_line_numbers]$lty <- 2 # 2=dashed
@@ -206,13 +189,12 @@ igraph.edge.weights <- function(graph,grid) {
   line_lengths <- c()
 
   for (line_i in seq_along(grid$lines[,1])) {
-    parameters <- get.element.parameters(grid$lines$element[line_i])
     
-    if (parameters$type == "line") {
-      length <- parameters$l
-    }else if (parameters$type == "trafo") {
+    if (grid$lines$type == "line") {
+      length <- grid$lines$line_l
+    }else if (grid$lines$type == "trafo") {
       length <- 0
-    }else if (parameters$type == "switch") {
+    }else if (grid$lines$type == "switch") {
       length <- 0
     }
     line_lengths <- c(line_lengths,length)

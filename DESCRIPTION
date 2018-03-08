@@ -1,0 +1,21 @@
+Package: rein
+Type: Package
+Title: Distribution Grid Reinforcement Optimization
+Version: 2.0.1
+Date: 2018-01-29
+Authors@R: c(person("Wolfgang", "Biener", email = "wolfgang.biener@ise.fraunhofer.de", role = c("aut", "cre")), person("Andre", "Siono", email = "andre.siono@ise.fraunhofer.de", role = c("aut")))
+Description: The package takes a grid data and calculates the optimum reinforcement measures. Reinforcement measures are categorized into three main methods: conventional, OLTC and Reactive Power Control(RPC). Grid data and load should be in list format specifying its busses, asset types, and loads. 
+Depends: R (>= 3.0.0)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1.9000
+Imports: plyr,
+    SimTOOL,
+    Matrix,
+    tools,
+    mefa,
+    igraph,
+    slam,
+    data.table,
+    reshape2, Rglpk
